@@ -2,41 +2,133 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8"/>
-  <title>مولد مذكرة — AI Prof Dali Nadjib</title>
+  <title>AI Prof Dali Nadjib — مولد المذكرات</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <style>
+    body{background:#0b0f14;color:#e6eef6;font-family:sans-serif;padding:20px}
+    .field{margin:10px 0;}
+    label{display:block;margin-bottom:5px;}
+    input,select{padding:8px;width:100%;border-radius:6px;border:none;}
+    .btn{margin:5px;background:linear-gradient(90deg,#00d1ff,#9cff5f);
+         color:#031018;font-weight:700;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;}
+    h1{color:#00d1ff;}
+  </style>
 </head>
-<body style="background:#0b0f14;color:white;font-family:sans-serif;padding:20px">
+<body>
   <h1>AI Prof Dali Nadjib</h1>
-  <button onclick="generate()">توليد مذكرة PDF</button>
+
+  <div class="field">
+    <label>اسم الأستاذ</label>
+    <input id="teacher" value="الأستاذ: دالي نجيب">
+  </div>
+  <div class="field">
+    <label>اسم المؤسسة</label>
+    <input id="school" value="متوسطة النجاح">
+  </div>
+  <div class="field">
+    <label>المستوى</label>
+    <select id="level">
+      <option>السنة الرابعة متوسط</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>اختر الدرس</label>
+    <select id="lesson">
+      <option value="sqrt">الجذر التربيعي لعدد موجب</option>
+    </select>
+  </div>
+
+  <button class="btn" onclick="preview()">معاينة</button>
+  <button class="btn" onclick="download()">تحميل PDF</button>
+
+  <div style="margin-top:20px;">
+    <iframe id="viewer" style="width:100%;height:600px;border:1px solid #555"></iframe>
+  </div>
 
 <script>
-function generate(){
-  const docDefinition = {
-    content: [
-      { text: 'مذكرة رياضيات', style: 'header', alignment:'center' },
-      { text: 'المستوى: السنة الرابعة متوسط', alignment:'center', margin:[0,10,0,10] },
-      { text: 'الدرس: الجذر التربيعي لعدد موجب', alignment:'center', margin:[0,0,0,20] },
+const lessons = {
+  "sqrt":{
+    title:"الجذر التربيعي لعدد موجب",
+    table:[
+      [
+        'مقدمة: مراجعة الأعداد الطبيعية والجذور',
+        'تعريف الجذر التربيعي وتبسيط الجذور',
+        'سبورة + كتاب مدرسي',
+        'شرح: إذا كان a ≥ 0 فإن √a هو العدد الموجب x بحيث x²=a.\nخواص: √(ab)=√a√b ، √(a/b)=√a/√b.\nأمثلة: √72=6√2 ، √98=7√2.',
+        ''
+      ],
+      [
+        'وضعيات تعلمية',
+        'ترسيخ القاعدة',
+        'تمارين تطبيقية',
+        '1. √49 و √0.25\n2. √98\n3. √(81/16)',
+        ''
+      ],
+      [
+        'التقويم والدعم',
+        'التأكد من الفهم',
+        '',
+        'حلول:\n√49=7 ، √0.25=0.5\n√98=7√2\n√(81/16)=9/4',
+        ''
+      ]
+    ]
+  }
+};
+
+function buildDoc(){
+  const teacher=document.getElementById("teacher").value;
+  const school=document.getElementById("school").value;
+  const level=document.getElementById("level").value;
+  const lessonKey=document.getElementById("lesson").value;
+  const lesson=lessons[lessonKey];
+
+  return {
+    content:[
+      {text:'الجمهورية الجزائرية الديمقراطية الشعبية',alignment:'center',style:'small'},
+      {text:'مذكرة في مادة الرياضيات',style:'coverTitle',alignment:'center',margin:[0,10,0,20]},
+      {text:level,alignment:'center',style:'coverSub'},
+      {text:'الدرس: '+lesson.title,alignment:'center',style:'coverSub',margin:[0,10,0,20]},
+      {text:teacher+" — "+school,alignment:'center',margin:[0,0,0,30]},
       {
         table:{
-          widths:['25%','25%','25%','25%'],
+          widths:['20%','20%','20%','30%','10%'],
           body:[
-            [{text:'الوضعية',style:'th'},{text:'الأهداف',style:'th'},{text:'الأنشطة',style:'th'},{text:'ملاحظات',style:'th'}],
-            ['مقدمة','تعريف الجذر','شرح √a',''],
-            ['تمارين','ترسيخ المفهوم','1) √49 , √0.25\n2) √98',''],
-            ['حلول','تحقق من الفهم','7, 0.5\n7√2','']
+            [
+              {text:'الوضعية التعليمية',style:'th'},
+              {text:'الأهداف التعلمية',style:'th'},
+              {text:'الوسائل',style:'th'},
+              {text:'الأنشطة',style:'th'},
+              {text:'ملاحظات',style:'th'}
+            ],
+            ...lesson.table
           ]
         },
         layout:'lightHorizontalLines'
-      }
+      },
+      {text:'\nتم الإنشاء بواسطة AI Prof Dali Nadjib',style:'footer',alignment:'center'}
     ],
     styles:{
-      header:{fontSize:22,bold:true,color:'#00d1ff'},
-      th:{bold:true,fillColor:'#e0f7ff',color:'#031018',alignment:'center'}
+      coverTitle:{fontSize:22,bold:true,color:'#00d1ff'},
+      coverSub:{fontSize:14,color:'#9cff5f'},
+      th:{bold:true,fillColor:'#e0f7ff',color:'#031018',alignment:'center'},
+      footer:{fontSize:10,italics:true,color:'#888'},
+      small:{fontSize:10,color:'#aaa'}
     },
-    defaultStyle:{font:'Helvetica'}
+    defaultStyle:{font:'Helvetica',fontSize:12}
   };
-  pdfMake.createPdf(docDefinition).download("مذكرة_رياضيات.pdf");
+}
+
+function preview(){
+  const doc=buildDoc();
+  pdfMake.createPdf(doc).getDataUrl(function(dataUrl){
+    document.getElementById('viewer').src=dataUrl;
+  });
+}
+
+function download(){
+  const doc=buildDoc();
+  pdfMake.createPdf(doc).download("مذكرة_"+document.getElementById("lesson").value+".pdf");
 }
 </script>
 </body>
