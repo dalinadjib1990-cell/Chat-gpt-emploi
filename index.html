@@ -1,601 +1,319 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>AI Prof Dali Nadjib - توليد جدول متوسطة</title>
-<style>
-  :root{
-    --bg:#0f0f10; --panel:#151515; --muted:#9aa0a6;
-    --accent:#00ffcc; --yellow:#ffeb66; --green:#70ff8a;
-  }
-  body{ background:var(--bg); color:#eee; font-family:Tahoma,Arial; direction:rtl; margin:0; padding:0;}
-  header{ background:linear-gradient(90deg,#0b1220,#111); padding:18px; text-align:center; font-size:22px; color:var(--accent); font-weight:700;}
-  .wrap{ padding:16px; max-width:1200px; margin:12px auto;}
-  label{ display:inline-block; margin:6px 8px 0 0; color:var(--muted);}
-  input[type="text"], input[type="number"]{ background:#111; border:1px solid #222; color:#fff; padding:6px 8px; border-radius:6px;}
-  button{ background:var(--accent); color:#061010; border:none; padding:8px 10px; border-radius:8px; margin-left:8px; cursor:pointer; font-weight:700;}
-  .controls{ margin:12px 0 18px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
-  table{ width:100%; border-collapse:collapse; margin-top:14px; table-layout:fixed; font-size:13px;}
-  th,td{ border:1px solid #262626; padding:6px; text-align:center; vertical-align:middle; word-break:break-word;}
-  th{ background:#161616; color:var(--muted); font-weight:700; position:sticky; top:0;}
-  td[contenteditable="true"]{ background:#111; }
-  .legend{ display:flex; gap:12px; margin-top:10px; align-items:center;}
-  .key{ display:flex; gap:6px; align-items:center;}
-  .swatch{ width:18px; height:12px; border-radius:4px; display:inline-block; border:1px solid #333;}
-  .yellow{ background:var(--yellow); color:#111; }
-  .green{ background:var(--green); color:#052; }
-  .note{ color:var(--muted); margin-top:8px; font-size:13px;}
-  .small{ font-size:12px; color:var(--muted);}
-  .flex{ display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
-  .teacher-actions{ display:flex; gap:8px; align-items:center; }
-  .fixed-head{ position:sticky; top:0; z-index:2;}
-  /* color labels for cells */
-  .cell-directed{ background:linear-gradient(90deg,#2b2a15, #342e00); color:#111; }
-  .cell-practical{ background:linear-gradient(90deg,#103017,#0b412a); color:#041b08; }
-  .cell-normal{ background:#0f1316; color:#ddd; }
-  /* responsive small screens */
-  @media(max-width:900px){ table{ font-size:11px; } header{ font-size:18px; } }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>مولد مذكرات رياضيات (مذكرة كاملة)</title>
+
+  <!-- html2pdf -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <!-- MathJax for equations -->
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
+  <style>
+    :root{ --accent:#0b66a0; --paper:#ffffff; --bg:#eef4f8; }
+    body{ font-family: "Tahoma", "Segoe UI", Arial; direction: rtl; background:var(--bg); padding:18px; }
+    h1,h2,h3{ margin:0 0 8px 0; }
+    .app{ max-width:1100px; margin:0 auto; display:flex; gap:18px; }
+    .form { flex:1; background:#fff; padding:12px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .previewWrap { width:750px; }
+    label{ display:block; margin:8px 0 4px; font-weight:700; }
+    input[type=text], textarea, select { width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; }
+    textarea{ min-height:70px; }
+    .btn { background:var(--accent); color:#fff; border:none; padding:10px 12px; border-radius:8px; cursor:pointer; margin-top:8px; }
+    .lesson { border:1px dashed #cfe6f2; padding:8px; margin-bottom:10px; border-radius:6px; background:#fbfeff; }
+    .controls-row { display:flex; gap:8px; }
+    .small{ font-size:13px; color:#555; }
+
+    /* --- PDF / page styles --- */
+    #book { background:var(--paper); padding:18mm; color:#111; box-shadow:0 6px 18px rgba(0,0,0,0.16); }
+    .cover { text-align:center; padding-top:30mm; padding-bottom:20mm; }
+    .cover h1{ font-size:34px; color:var(--accent); }
+    .cover .meta{ margin-top:20px; font-size:16px; }
+    .toc { margin-top:8mm; margin-bottom:8mm; }
+    .lessonPage { page-break-after: always; margin-bottom:6mm; }
+    .lessonHeader { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--accent); padding-bottom:6px; margin-bottom:8px; }
+    .sectionBox { border-left:6px solid var(--accent); padding:8px; background:#fbfdff; margin-bottom:8px; }
+    img.content-img{ max-width:100%; height:auto; border:1px solid #ddd; margin-top:6px; }
+
+    /* Ensure page size for A4 when printing */
+    @media print {
+      body { background: white; }
+      .app, .form, .btn { display:none; } /* hide UI when printing if using print */
+      #book { box-shadow:none; width:210mm; min-height:297mm; padding:20mm; }
+      .lessonPage { page-break-after: always; }
+    }
+  </style>
 </head>
 <body>
-<header>AI Prof Dali Nadjib — مولّد الإستعمال الزمني (احترافي)</header>
-<div class="wrap">
 
-  <div class="controls">
-    <label>اسم المؤسسة:</label>
-    <input id="schoolName" type="text" placeholder="مثال: متوسطة ولاد عمر" value="متوسطة ولاد عمر" />
-    <label>الأقسام (تفصيلاً 1..4):</label>
-    <input id="c1" type="number" value="5" min="0" style="width:60px" /> <small class="small">1م</small>
-    <input id="c2" type="number" value="4" min="0" style="width:60px" /> <small class="small">2م</small>
-    <input id="c3" type="number" value="3" min="0" style="width:60px" /> <small class="small">3م</small>
-    <input id="c4" type="number" value="2" min="0" style="width:60px" /> <small class="small">4م</small>
+<div class="app">
+  <div class="form">
+    <h2>إعداد المذكرة (مذكرة كاملة)</h2>
 
-    <div style="margin-left:auto" class="flex">
-      <button id="fillBtn">مؤسستي (ملء افتراضي)</button>
-      <button id="resetBtn">إعادة تعيين</button>
-      <button id="generateBtn">توليد جدول المؤسسة</button>
-      <button id="regenBtn">احتمالية جديدة</button>
+    <label>اسم الأستاذ (سيظهر في الغلاف):</label>
+    <input id="teacher" type="text" placeholder="اكتب اسمك هنا (مثلاً: د. علي بن محمد)" value="الأستاذ: د. مثال" />
+
+    <label>اسم المؤسسة / سنة:</label>
+    <input id="school" type="text" placeholder="مثلاً: مدرسة النور - السنة الدراسية 2025" value="متوسطة المثال — 2025" />
+
+    <label>مستوى المذكرة:</label>
+    <select id="level">
+      <option>متوسط 1</option>
+      <option>متوسط 2</option>
+      <option>متوسط 3</option>
+    </select>
+
+    <hr />
+
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button id="addLesson" class="btn">+ إضافة درس جديد</button>
+      <button id="clearAll" class="btn" style="background:#b33">مسح كل الدروس</button>
+    </div>
+
+    <div id="lessonsContainer" style="margin-top:12px; max-height:52vh; overflow:auto;"></div>
+
+    <div style="margin-top:10px;">
+      <button id="renderBtn" class="btn">عرض معاينة المذكرة</button>
+      <button id="makePdfBtn" class="btn">تنزيل المذكرة كـ PDF</button>
+      <div class="small" style="margin-top:6px;">ملاحظة: استخدم زر "إضافة درس" لإضافة أي عدد من الدروس. يدعم MathJax لكتابة المعادلات بين \\( ... \\) أو \\[ ... \\]</div>
     </div>
   </div>
 
-  <div class="legend">
-    <div class="key"><span class="swatch yellow"></span><span class="small">أعمال موجهة (مقسمة)</span></div>
-    <div class="key"><span class="swatch green"></span><span class="small">أعمال تطبيقية (مقسمة)</span></div>
-    <div class="key"><span style="width:18px;height:12px;border-radius:4px;background:var(--accent);display:inline-block;margin-right:6px"></span><span class="small">نص مميز</span></div>
+  <div class="previewWrap">
+    <h3>معاينة المذكرة (ستظهر هنا قبل التحويل)</h3>
+    <div id="preview" style="display:block;">
+
+      <!-- المكان الذي سيملأ به السكربت محتوى المذكرة -->
+      <div id="book"></div>
+
+    </div>
   </div>
-
-  <p class="note">ملاحظة: بعد "إعادة تعيين" يمكنك تعديل أو حذف المدخلات ثم الضغط على "توليد" ليعمل على المعطيات الجديدة. زر "احتمالية جديدة" يعيد توزيع الحصص كل مرة.</p>
-
-  <!-- جدول الأساتذة: أسم، مادة، وأعمدة أيام تُعرض الأقسام/الحصص المسندة -->
-  <h3 style="margin-top:18px">جدول المدخلات - الأساتذة</h3>
-  <table id="teacherInput">
-    <thead><tr>
-      <th>الأستاذ</th><th>المادة</th><th>الأقسام المسندة</th><th>عدد ساعات معلن</th>
-      <th>ملاحظة أيام بيداغوجية</th><th>إجراء</th>
-    </tr></thead>
-    <tbody></tbody>
-  </table>
-  <div style="margin-top:8px" class="teacher-actions">
-    <button id="addTeacherBtn">إضافة أستاذ</button>
-    <span class="small">(قابلة للتعديل مباشرة: انقر على الخلايا لتعديل اسم/مادة/أقسام/ساعات)</span>
-  </div>
-
-  <!-- جدول التلاميذ: كل صف قسم وكل عمود يوم+حصة -->
-  <h3 style="margin-top:18px">جدول التلاميذ (الصف = قسم)</h3>
-  <div style="overflow:auto; border:1px solid #222; border-radius:8px; padding:6px;">
-    <table id="studentTable">
-      <thead id="studentHead"></thead>
-      <tbody id="studentBody"></tbody>
-    </table>
-  </div>
-
-  <p class="note">كل خلية قابلة للتعديل: يمكنك تغيير المادة أو الأستاذ يدوياً بعد التوليد.</p>
 </div>
 
 <script>
-/* ========== بيانات أساسية وتهيئة ========== */
+  // Helpers
+  const lessonsContainer = document.getElementById('lessonsContainer');
+  const book = document.getElementById('book');
+  let lessonCount = 0;
 
-/* ساعات تقريبية لكل مادة (مثال ثابت لجميع المستويات، يمكن تعديله لاحقاً) */
-const hoursPerSubjectByLevel = {
-  1: { "عربية":5,"رياضيات":5,"فرنسية":4,"إنجليزية":2,"علوم طبيعية":2,"فيزياء":2,"تاريخ":2,"تربية اسلامية":1,"تربية مدنية":1,"اعلام الي":2,"رسم":0,"رياضة":2 },
-  2: { "عربية":5,"رياضيات":5,"فرنسية":4,"إنجليزية":2,"علوم طبيعية":2,"فيزياء":2,"تاريخ":2,"تربية اسلامية":1,"تربية مدنية":1,"اعلام الي":2,"رسم":0,"رياضة":2 },
-  3: { "عربية":5,"رياضيات":5,"فرنسية":4,"إنجليزية":2,"علوم طبيعية":2,"فيزياء":2,"تاريخ":2,"تربية اسلامية":1,"تربية مدنية":1,"اعلام الي":2,"رسم":0,"رياضة":2 },
-  4: { "عربية":6,"رياضيات":6,"فرنسية":4,"إنجليزية":2,"علوم طبيعية":2,"فيزياء":2,"تاريخ":2,"تربية اسلامية":0,"تربية مدنية":0,"اعلام الي":0,"رسم":2,"رياضة":2 }
-};
-/* ملاحظة: ضبطت 4م رياضيات وعربية إلى 6 كما طلبت (تصحيح) */
+  function makeLessonForm(prefill = {}) {
+    lessonCount++;
+    const id = 'lesson_' + lessonCount;
+    const el = document.createElement('div');
+    el.className = 'lesson';
+    el.id = id;
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>درس ${lessonCount}</strong>
+        <div style="display:flex; gap:6px">
+          <button class="btn btn-remove" style="background:#c33">حذف</button>
+        </div>
+      </div>
 
-/* قائمة الأساتذة الافتراضية (تم حذف "سعيدة") */
-let teachersDefault = [
-  {name:"دالي نجيب", subj:"رياضيات"},
-  {name:"بن بارش منيرة", subj:"رياضيات"},
-  {name:"رقيق رمزي", subj:"رياضيات"},
-  {name:"مروة", subj:"عربية"},
-  {name:"صبرينة", subj:"عربية"},
-  {name:"أسيا", subj:"عربية"},
-  {name:"زينب", subj:"فرنسية"},
-  {name:"العيد", subj:"فرنسية"},
-  {name:"سارة", subj:"فرنسية"},
-  {name:"بوبكر", subj:"إنجليزية"},
-  {name:"هشام", subj:"إنجليزية"},
-  {name:"أمينة", subj:"إنجليزية"},
-  {name:"وسيلة", subj:"علوم طبيعية"},
-  {name:"فتيحة", subj:"علوم طبيعية"},
-  {name:"عبد الرزاق", subj:"فيزياء"},
-  {name:"بلوطار", subj:"فيزياء"},
-  {name:"شيماء", subj:"فيزياء"},
-  {name:"وداد", subj:"تاريخ"},
-  {name:"عائشة", subj:"تاريخ"},
-  {name:"فاطمة", subj:"تاريخ"},
-  {name:"علاء", subj:"رياضة"},
-  {name:"خير الدين", subj:"رياضة"},
-  {name:"سهام", subj:"تربية اسلامية"},
-  {name:"شهرة", subj:"اعلام الي"},
-  {name:"سيف", subj:"رسم"}
-];
+      <label>عنوان الدرس:</label>
+      <input class="l-title" type="text" value="${prefill.title||''}" />
 
-/* الأيام و الحصص */
-const DAYS = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس"];
-const PERIODS = 6; // 6 حصص يومياً
+      <label>شرح الدرس (يمكن كتابة معادلات MathJax):</label>
+      <textarea class="l-desc">${prefill.desc||''}</textarea>
 
-/* DOM refs */
-const teacherTbody = document.querySelector("#teacherInput tbody");
-const studentHead = document.getElementById("studentHead");
-const studentBody = document.getElementById("studentBody");
-const fillBtn = document.getElementById("fillBtn");
-const resetBtn = document.getElementById("resetBtn");
-const generateBtn = document.getElementById("generateBtn");
-const regenBtn = document.getElementById("regenBtn");
-const addTeacherBtn = document.getElementById("addTeacherBtn");
+      <label>أمثلة (ضع كل مثال بسطر):</label>
+      <textarea class="l-ex">${prefill.examples||''}</textarea>
 
-/* helpers */
-function uid(){ return Math.random().toString(36).slice(2,9); }
+      <label>تمارين (ضع كل تمرين بسطر):</label>
+      <textarea class="l-q">${prefill.exercises||''}</textarea>
 
-/* ========== إدارة المدخلات (أساتذة) ========== */
-function renderTeachersTable(list){
-  teacherTbody.innerHTML = "";
-  list.forEach(t=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td contenteditable="true">${t.name}</td>
-      <td contenteditable="true">${t.subj}</td>
-      <td contenteditable="true">${(t.classes||"")}</td>
-      <td contenteditable="true">${(t.hours||"")}</td>
-      <td contenteditable="true">${(t.note||"")}</td>
-      <td><button onclick="removeTeacher(this)">حذف</button></td>`;
-    teacherTbody.appendChild(tr);
-  });
-}
-function removeTeacher(btn){ btn.closest("tr").remove(); }
-function collectTeachersFromTable(){
-  const rows = Array.from(teacherTbody.rows);
-  const out = [];
-  rows.forEach(r=>{
-    const name = r.cells[0].innerText.trim();
-    const subj = r.cells[1].innerText.trim();
-    let classes = r.cells[2].innerText.trim();
-    let hours = parseInt(r.cells[3].innerText.trim()) || null;
-    // classes can be comma list or empty -> leave to generation
-    out.push({name, subj, classes: classes? classes.split(",").map(s=>s.trim()):[], hours});
-  });
-  return out;
-}
+      <label>حلول قصيرة (اختياري):</label>
+      <textarea class="l-sol">${prefill.solutions||''}</textarea>
 
-/* زر إضافة أستاذ */
-addTeacherBtn.onclick = ()=>{
-  const tr = document.createElement("tr");
-  tr.innerHTML = `<td contenteditable="true">أدخل الاسم</td>
-    <td contenteditable="true">المادة</td>
-    <td contenteditable="true"></td>
-    <td contenteditable="true"></td>
-    <td contenteditable="true"></td>
-    <td><button onclick="removeTeacher(this)">حذف</button></td>`;
-  teacherTbody.appendChild(tr);
-};
+      <label>صورة توضيحية (اختياري):</label>
+      <input type="file" accept="image/*" class="l-img" />
+      <div class="small img-name"></div>
+    `;
 
-/* زر ملء افتراضي */
-fillBtn.onclick = ()=>{
-  // نوزع الأقسام بشكل متقارب على أساتذة المادة لاحقاً
-  renderTeachersTable(teachersDefault.map(t=> ({...t, classes:[], hours:"", note:""})));
-  alert("تم ملء قائمة الأساتذة افتراضياً. اضغط 'توليد' لعمل جدول، أو عدّل المدخلات ثم توليد.");
-};
+    lessonsContainer.appendChild(el);
 
-/* زر إعادة تعيين */
-resetBtn.onclick = ()=> {
-  if(!confirm("هل تريد إعادة التعيين ومسح المدخلات والجداول؟")) return;
-  teacherTbody.innerHTML = "";
-  studentHead.innerHTML = "";
-  studentBody.innerHTML = "";
-};
+    // remove handler
+    el.querySelector('.btn-remove').addEventListener('click', ()=> {
+      el.remove();
+      rebuildPreview(); // refresh
+    });
 
-/* ========== بناء رأس جدول التلاميذ (الأعمدة: كل يوم × كل حصة) ========== */
-function buildStudentHead(){
-  const tr = document.createElement("tr");
-  tr.innerHTML = `<th>القسم</th>`;
-  for(let d=0; d<DAYS.length; d++){
-    for(let p=1; p<=PERIODS; p++){
-      const th = document.createElement("th");
-      th.innerText = `${DAYS[d]} ${p}`;
-      tr.appendChild(th);
-    }
-  }
-  studentHead.innerHTML = "";
-  studentHead.appendChild(tr);
-}
+    // image load
+    const imgInput = el.querySelector('.l-img');
+    const imgNameDiv = el.querySelector('.img-name');
+    imgInput.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      imgNameDiv.textContent = f.name;
+      const reader = new FileReader();
+      reader.onload = ()=> {
+        el.dataset.img = reader.result;
+      };
+      reader.readAsDataURL(f);
+    });
 
-/* ========== خوارزمية التوليد الأساسية ========== */
+    // update preview on change
+    el.querySelectorAll('input, textarea').forEach(inp=>{
+      inp.addEventListener('input', () => rebuildPreview());
+    });
 
-/*
-تخطيط مبسّط ومنطقي:
-- نقرأ عدد الأقسام من المدخلات c1..c4 (تفصيلي).
-- نكوّن مجموعة أقسام تحمل مستوى ورقم (مثال: 1-1 ... 4-2).
-- لكل مستوى نأخذ ساعات المواد من hoursPerSubjectByLevel.
-- نفكّك ساعات التفويج بحيث: إذا هناك تفويج عربي/رياضيات للمستويات 1..3 -> نحسب حصص مشتركة.
-- نملأ مصفوفة (sections x totalSlots) حيث totalSlots = DAYS * PERIODS.
-- نوزع المواد لكل قسم حسب الحصص المطلوبة مع مراعات:
-   * أيام البيداغوجي: يمنع وضع مادة في يومها المحظور (طبقنا قائمة بسيطة أدناه).
-   * لا نكرر نفس المادة متتالية في نفس اليوم.
-- بعد توزيع المواد لكل قسم، نُسنِد أساتذة لكل مادة دورياً ونحاول موازنة الساعات.
-- نلون الخلايا: التفويج (مقسّم) أصفر، الأعمال التطبيقية مقروئة أخضر.
-- النتيجة قابلة للتعديل يدوياً.
-*/
-
-const pedagogicalBan = {
-  // الأيام محظورة جزئياً للمادة (0=الأحد ... 4=الخميس)
-  "تاريخ": [/*الأحد*/0], // تاريخ/جغرافيا يوم الأحد
-  "تربية مدنية":[0],
-  "عربية":[1], // الاثنين
-  "تربية اسلامية":[1],
-  "فرنسية":[2],
-  "إنجليزية":[2],
-  "رياضة":[2],
-  "اعلام الي":[2],
-  "علوم طبيعية":[3],
-  "فيزياء":[3],
-  "رياضيات":[4],
-  "رسم":[4]
-};
-
-/* إنشاء قائمة الأقسام بناءً على المدخلات */
-function buildSections(){
-  const c1 = parseInt(document.getElementById("c1").value)||0;
-  const c2 = parseInt(document.getElementById("c2").value)||0;
-  const c3 = parseInt(document.getElementById("c3").value)||0;
-  const c4 = parseInt(document.getElementById("c4").value)||0;
-  const sections = [];
-  for(let i=1;i<=c1;i++) sections.push({id:`1-${i}`, level:1});
-  for(let i=1;i<=c2;i++) sections.push({id:`2-${i}`, level:2});
-  for(let i=1;i<=c3;i++) sections.push({id:`3-${i}`, level:3});
-  for(let i=1;i<=c4;i++) sections.push({id:`4-${i}`, level:4});
-  return sections;
-}
-
-/* توزيع المواد لكل قسم (مصفوفة slots) */
-function generateSectionTimetable(section, subjCounts, rng){
-  const totalSlots = DAYS.length * PERIODS;
-  const slots = new Array(totalSlots).fill(null); // كل خانة = {subject, special?}
-  // helper: index(day,period)
-  const idx = (d,p)=> d*PERIODS + p;
-  // produce a list of slot indices ordered to prioritize الصباح (periods 1-3)
-  const preferredOrder = [];
-  for(let d=0; d<DAYS.length; d++){
-    for(let p=0; p<PERIODS; p++){
-      // push morning earlier
-      preferredOrder.push({d,p,score: (p<3?0:1) + (Math.random()*0.3)});
-    }
-  }
-  preferredOrder.sort((a,b)=> a.score - b.score);
-
-  // Flatten subjCounts into array of subject tokens including split-subject tokens
-  let pool = [];
-  for(const [s,count] of Object.entries(subjCounts)){
-    for(let i=0;i<count;i++) pool.push(s);
-  }
-  // shuffle pool
-  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(rng()* (i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
-
-  // fill slots from pool respecting pedagogical ban and no consecutive same-subject
-  for(const item of preferredOrder){
-    if(pool.length===0) break;
-    // find next pool index that can fit here
-    let placed=false;
-    for(let k=0;k<pool.length && !placed;k++){
-      const subj = pool[k];
-      const day = item.d;
-      const period = item.p;
-      // ban by day?
-      if(pedagogicalBan[subj] && pedagogicalBan[subj].includes(day)) continue;
-      // no same subj immediately before/after in same day
-      const before = period>0 ? slots[idx(day,period-1)] : null;
-      const after = period<PERIODS-1 ? slots[idx(day,period+1)] : null;
-      if(before && before.subject === subj) continue;
-      // special handling for split subjects (like "عربية/رياضيات-split" or "فرنسية/انجليزية-split")
-      if(subj.includes("[SPLIT]")){
-        // treat as single slot representing split; mark as directed/practical via token
-      }
-      // place it
-      slots[idx(day,period)] = {subject:subj};
-      pool.splice(k,1);
-      placed=true;
-    }
+    return el;
   }
 
-  // If leftover pool items (rare), place them anywhere empty without checking ban (best-effort)
-  for(let i=0;i<slots.length && pool.length>0;i++){
-    if(!slots[i]){
-      slots[i] = {subject: pool.shift()};
-    }
-  }
-
-  // Fill any remaining null slots with "استدراك / تعويض" placeholder to avoid فراغ للتلميذ
-  for(let i=0;i<slots.length;i++){
-    if(!slots[i]) slots[i] = {subject:"استراحة/استدراك"};
-  }
-
-  return slots;
-}
-
-/* helper rng */
-function mulberry32(a) {
-  return function() {
-    var t = a += 0x6D2B79F5;
-    t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  }
-}
-
-/* تحويل مخرجات إلى عرض جدول وتوزيع أساتذة */
-function renderStudentTable(sections, schedules, teacherAssignment){
-  buildStudentHead();
-  studentBody.innerHTML = "";
-  sections.forEach(sec=>{
-    const row = document.createElement("tr");
-    row.innerHTML = `<td style="font-weight:700">${sec.id}</td>`;
-    const slots = schedules[sec.id];
-    for(let i=0;i<slots.length;i++){
-      const cell = document.createElement("td");
-      const subj = slots[i].subject;
-      // find assigned teacher for this section-slot if exists
-      const teacher = teacherAssignment[sec.id] && teacherAssignment[sec.id][i] ? teacherAssignment[sec.id][i] : "";
-      // coloring for splits: detect tokens we used below: "[DIR]" for directed (yellow) and "[PRA]" for practical (green)
-      let display = subj;
-      let cls = "cell-normal";
-      if(subj.includes("[DIR]")){
-        display = subj.replace("[DIR]","").trim();
-        cls = "cell-directed";
-      } else if(subj.includes("[PRA]")){
-        display = subj.replace("[PRA]","").trim();
-        cls = "cell-practical";
-      }
-      cell.className = cls;
-      cell.contentEditable = "true";
-      cell.innerText = `${display}${teacher? ("\n("+teacher+")") : ""}`;
-      row.appendChild(cell);
-    }
-    studentBody.appendChild(row);
-  });
-}
-
-/* assign teachers to section schedules rotating among teachers of the same subject,
-   try to avoid double-booking: we'll build teacherSlots[teacherName][slotIndex] = true
-*/
-function assignTeachersToSchedules(sections, schedules, teachersList){
-  // build subject -> teacher array
-  const subjMap = {};
-  teachersList.forEach(t=>{
-    if(!subjMap[t.subj]) subjMap[t.subj]=[];
-    subjMap[t.subj].push(t.name);
-  });
-  // teacher booked map
-  const teacherBooked = {};
-  Object.values(subjMap).flat().forEach(name=> teacherBooked[name] = new Set());
-  const assignment = {}; // assignment[sectionId][slotIndex] = teacherName
-
-  sections.forEach(sec=>{
-    assignment[sec.id] = {};
+  document.getElementById('addLesson').addEventListener('click', ()=> {
+    makeLessonForm();
   });
 
-  // for each slot index (0..total-1), iterate sections and assign teacher for that slot based on subject
-  const totalSlots = DAYS.length * PERIODS;
-  for(let slot=0; slot<totalSlots; slot++){
-    // randomize order of sections to diversify assignment
-    const order = sections.slice().sort(()=> Math.random()-0.5);
-    for(const sec of order){
-      const subjToken = schedules[sec.id][slot].subject;
-      let subj = subjToken.replace("[DIR]","").replace("[PRA]","").trim();
-      // if it's a composite like "عربية/رياضيات" keep as subjToken (we'll try to map to main subject -> choose first)
-      // pick teacher list
-      const candidates = subjMap[subj] || [];
-      let chosen = null;
-      for(const cand of candidates){
-        // if not booked at this slot
-        if(!teacherBooked[cand].has(slot)){
-          chosen = cand; break;
-        }
-      }
-      // if no candidate free, allow someone double-booked (last resort)
-      if(!chosen && candidates.length>0) chosen = candidates[0];
-      if(chosen){
-        assignment[sec.id][slot] = chosen;
-        teacherBooked[chosen].add(slot);
-      } else {
-        assignment[sec.id][slot] = "";
-      }
-    }
-  }
-  return assignment;
-}
-
-/* main generate function */
-function generateTimetables(seed=Date.now()){
-  // get current teachers from table (if empty use default)
-  let teachers = collectTeachersFromTable();
-  if(teachers.length===0){ teachers = teachersDefault.map(t=>({...t})); renderTeachersTable(teachers); }
-
-  // ensure classes distribution for each teacher: if empty, we'll assign later
-  // build sections
-  const sections = buildSections();
-  if(sections.length===0){
-    alert("لم تحدد أي قسم. عيّن عدد الأقسام أولاً.");
-    return;
-  }
-
-  // For each section level, build subjCounts (number of weekly slots) from hoursPerSubjectByLevel
-  // Note: we'll convert hours to number of slots (1 hour = 1 slot). For directed/practical splits, we create special tokens
-  const rng = mulberry32(seed & 0xffffffff);
-  const schedules = {}; // schedules[sectionId] = slots array
-  // precompute for each level a subjCounts object
-  const subjCountsByLevel = {};
-  for(const lvl of [1,2,3,4]){
-    const map = {};
-    const spec = hoursPerSubjectByLevel[lvl];
-    for(const [subj,hrs] of Object.entries(spec)){
-      if(hrs>0) map[subj] = hrs;
-    }
-    subjCountsByLevel[lvl] = map;
-  }
-
-  // Incorporate directed/practical split rules:
-  // - For levels 1-3: one directed slot counts as 1 slot but is marked as "[DIR]" and will be displayed yellow
-  //   The directed pairing: "عربية/رياضيات" => token "عربية/رياضيات [DIR]"
-  // - For level 4: special double math slot: we'll create a token "رياضيات (ساعتين) [DIR]" occupying 2 consecutive slots
-  // - For french/english split: token "فرنسية/إنجليزية [DIR]"
-  // - For physics/biology practical: token "فيزياء/علوم طبيعية [PRA]"
-
-  // Build per-section subj pools
-  for(const sec of sections){
-    const lvl = sec.level;
-    // copy map
-    const subjMap = {...subjCountsByLevel[lvl]};
-
-    // handle directed arabic/math for levels 1-3
-    const pool = {};
-    // copy subj hours
-    for(const s in subjMap) pool[s] = subjMap[s];
-
-    // now create the actual slot list counts (poolSlots)
-    // we'll transform some slots into special tokens
-    const poolSlots = [];
-    // first regular subjects
-    for(const [s,c] of Object.entries(pool)){
-      for(let k=0;k<c;k++) poolSlots.push(s);
-    }
-
-    // Add special tokens: for levels 1-3 add arabic/math split slots count = minimal number of substitutions
-    if(lvl>=1 && lvl<=3){
-      // number to convert: we'll create as many directed slots as min(hours arabic, hours math) but capped reasonably
-      const arab = subjMap["عربية"] || 0;
-      const math = subjMap["رياضيات"] || 0;
-      const numDirected = Math.min(arab, math,  Math.max(1, Math.floor(Math.min(arab,math)/2)));
-      // replace equal number of arab & math slots by directed tokens (best-effort)
-      let replaced=0;
-      for(let i=0;i<poolSlots.length && replaced<numDirected;i++){
-        if(poolSlots[i]==="عربية" || poolSlots[i]==="رياضيات"){
-          poolSlots[i] = "عربية/رياضيات [DIR]";
-          replaced++;
-        }
-      }
-    }
-    // For level 4, directed math double-slot per section: create one token that will occupy 2 slots
-    if(lvl===4){
-      // convert two math slots into one double token if possible
-      // remove two "رياضيات" occurrences and add "رياضيات (2) [DIR]"
-      let removed=0;
-      for(let i=poolSlots.length-1;i>=0 && removed<2;i--){
-        if(poolSlots[i]==="رياضيات"){ poolSlots.splice(i,1); removed++; }
-      }
-      if(removed===2) poolSlots.push("رياضيات (2) [DIR]"); // will be handled as 2 consecutive slots
-    }
-
-    // french/english split for all levels: convert one slot if both exist
-    const fr = subjMap["فرنسية"]||0;
-    const en = subjMap["إنجليزية"]||0;
-    if(fr>0 && en>0){
-      // replace one occurrence with split token
-      for(let i=0;i<poolSlots.length;i++){
-        if(poolSlots[i]==="فرنسية" || poolSlots[i]==="إنجليزية"){
-          poolSlots[i] = "فرنسية/إنجليزية [DIR]";
-          break;
-        }
-      }
-    }
-
-    // physics/biology practical split
-    const phy = subjMap["فيزياء"]||0;
-    const bio = subjMap["علوم طبيعية"]||0;
-    if(phy>0 && bio>0){
-      for(let i=0;i<poolSlots.length;i++){
-        if(poolSlots[i]==="فيزياء" || poolSlots[i]==="علوم طبيعية"){
-          poolSlots[i] = "فيزياء/علوم طبيعية [PRA]";
-          break;
-        }
-      }
-    }
-
-    // shuffle poolSlots a bit
-    for(let i=poolSlots.length-1;i>0;i--){ const j = Math.floor(rng()*(i+1)); [poolSlots[i],poolSlots[j]]=[poolSlots[j],poolSlots[i]]; }
-
-    // build subjCounts simplified: count occurrences (note: double-slot tokens need handling later)
-    const counts = {};
-    poolSlots.forEach(s=> counts[s] = (counts[s]||0)+1);
-
-    // generate actual timetable for this section
-    const slots = generateSectionTimetable(sec, counts, rng);
-    // handle "رياضيات (2) [DIR]" occupying two consecutive slots:
-    // We'll scan slots and if one contains that token we try to set next slot same token (if next exists).
-    for(let i=0;i<slots.length;i++){
-      if(slots[i].subject==="رياضيات (2) [DIR]"){
-        // ensure next slot exists and not same day constraints; if next is end of day, try previous slot
-        const day = Math.floor(i/PERIODS);
-        const p = i % PERIODS;
-        let placed=false;
-        if(p < PERIODS-1 && Math.floor((i+1)/PERIODS)===day){
-          slots[i+1]= {subject:"رياضيات (2) [DIR]"};
-          placed=true;
-        } else if(p>0){
-          slots[i-1]= {subject:"رياضيات (2) [DIR]"};
-          placed=true;
-        }
-        // if couldn't, just leave single slot as fallback
-        if(!placed) slots[i].subject = "رياضيات [DIR]";
-      }
-    }
-
-    schedules[sec.id] = slots;
-  }
-
-  // now assign teachers
-  const teachersList = teachers.map(t=>{
-    // if classes empty, we'll allow assignment to any matching subject
-    return { name: t.name || "غير معلم", subj: t.subj || "عام" };
+  document.getElementById('clearAll').addEventListener('click', ()=> {
+    lessonsContainer.innerHTML = '';
+    lessonCount = 0;
+    rebuildPreview();
   });
-  const teacherAssignment = assignTeachersToSchedules(sections, schedules, teachersList);
 
-  // render
-  renderStudentTable(sections, schedules, teacherAssignment);
+  function getAllLessons() {
+    const nodes = Array.from(lessonsContainer.querySelectorAll('.lesson'));
+    return nodes.map((node, i) => {
+      return {
+        title: node.querySelector('.l-title').value || `درس ${i+1}`,
+        desc: node.querySelector('.l-desc').value || '',
+        examples: node.querySelector('.l-ex').value || '',
+        exercises: node.querySelector('.l-q').value || '',
+        solutions: node.querySelector('.l-sol').value || '',
+        image: node.dataset.img || null
+      };
+    });
+  }
 
-  // keep data globally for regen
-  window.__last = {sections, schedules, teachersList, teacherAssignment, seed};
-}
+  function rebuildPreview() {
+    const teacher = document.getElementById('teacher').value || '';
+    const school = document.getElementById('school').value || '';
+    const level = document.getElementById('level').value || '';
+    const lessons = getAllLessons();
 
-/* أزرار التوليد */
-generateBtn.onclick = ()=> {
-  generateTimetables(Date.now());
-};
-regenBtn.onclick = ()=> {
-  // new seed different each click
-  generateTimetables(Date.now() + Math.floor(Math.random()*999999));
-};
+    // Build HTML for book
+    let html = '';
 
-/* عند تحميل الصفحة، نجهز رأس الجدول */
-buildStudentHead();
+    // Cover
+    html += `<div class="cover lessonPage">
+      <h1>مذكرة رياضيات</h1>
+      <div style="margin-top:10px;font-size:20px;color:var(--accent)">${level}</div>
+      <div class="meta" style="margin-top:18px">${school}</div>
+      <div class="meta" style="margin-top:30px">الأستاذ: <strong>${teacher}</strong></div>
+    </div>`;
 
-/* fill افتراضي عند أول تحميل */
-renderTeachersTable([]);
+    // Table of contents
+    html += `<div class="toc lessonPage">
+      <h2>فهرس المحتويات</h2>
+      <ol>`;
+    lessons.forEach((ls, idx) => {
+      html += `<li>${ls.title || 'درس ' + (idx+1)}</li>`;
+    });
+    html += `</ol></div>`;
 
-/* اختياري: استمع للملء الافتراضي */
-document.addEventListener("keydown", (e)=>{ if(e.key==="F2"){ fillBtn.click(); } });
+    // Lessons
+    lessons.forEach((ls, idx) => {
+      html += `<div class="lessonPage">
+        <div class="lessonHeader">
+          <div><h2>${idx+1}. ${ls.title}</h2></div>
+          <div class="small">المستوى: ${level}</div>
+        </div>
 
+        <div class="sectionBox">
+          <strong>الشرح:</strong>
+          <div style="margin-top:6px">${nl2br(escapeHtml(ls.desc))}</div>
+        </div>`;
+
+      if(ls.image){
+        html += `<div class="sectionBox">
+          <strong>صورة توضيحية:</strong>
+          <div><img class="content-img" src="${ls.image}" alt="صورة توضيحية" /></div>
+        </div>`;
+      }
+
+      if(ls.examples.trim()){
+        html += `<div class="sectionBox">
+          <strong>أمثلة:</strong>
+          <ol>`;
+        ls.examples.split(/\n/).filter(s=>s.trim()).forEach(ex => {
+          html += `<li>${escapeHtml(ex)}</li>`;
+        });
+        html += `</ol></div>`;
+      }
+
+      if(ls.exercises.trim()){
+        html += `<div class="sectionBox">
+          <strong>تمارين:</strong>
+          <ol>`;
+        ls.exercises.split(/\n/).filter(s=>s.trim()).forEach(q => {
+          html += `<li>${escapeHtml(q)}</li>`;
+        });
+        html += `</ol></div>`;
+      }
+
+      if(ls.solutions.trim()){
+        html += `<div class="sectionBox">
+          <strong>حلول قصيرة:</strong>
+          <div>${nl2br(escapeHtml(ls.solutions))}</div>
+        </div>`;
+      }
+
+      html += `</div>`; // lessonPage
+    });
+
+    // Footer / credits
+    html += `<div class="lessonPage" style="text-align:center;padding-top:80px;">
+      <div class="small">تم إنشاؤها بواسطة مولد المذكرات — ${new Date().getFullYear()}</div>
+    </div>`;
+
+    book.innerHTML = html;
+
+    // render math if any
+    if(window.MathJax) MathJax.typesetPromise();
+  }
+
+  // utilities
+  function nl2br(str){ return str.replace(/\n/g, '<br/>'); }
+  function escapeHtml(text) {
+    if(!text) return '';
+    return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // initial
+  makeLessonForm({ title: 'المستقيمات والتوازي', desc: 'تعريف المستقيم... \\(y=mx+c\\) مثال: \\(2x+3y=6\\).', examples: 'مثال 1: احسب ...\nمثال 2: اثبت ...', exercises: 'تمرين 1: ...\nتمرين 2: ...', solutions: 'حل 1: ...' });
+  makeLessonForm({ title: 'الزوايا والمثلثات', desc: 'مفاهيم أساسية في الزوايا والمثلثات.', examples: 'مثال: مثلث قائم الزاوية...', exercises: 'تمرين: احسب قيمة ...', solutions: '' });
+  rebuildPreview();
+
+  document.getElementById('renderBtn').addEventListener('click', ()=> {
+    rebuildPreview();
+    // give MathJax time then scroll
+    MathJax.typesetPromise().then(()=> {
+      book.scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  document.getElementById('makePdfBtn').addEventListener('click', ()=> {
+    rebuildPreview();
+    MathJax.typesetPromise().then(()=> {
+      // options for html2pdf
+      const opt = {
+        margin:       [10,10,10,10],
+        filename:     (document.getElementById('teacher').value || 'mouadara') + '.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      // clone book to avoid UI interference
+      const element = book.cloneNode(true);
+      // ensure fonts/background present
+      element.style.background = 'white';
+      // run converter
+      html2pdf().set(opt).from(element).save();
+    });
+  });
 </script>
+
 </body>
 </html>
