@@ -3,316 +3,348 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>مولد مذكرات رياضيات (مذكرة كاملة)</title>
+  <title>مولّد مذكرات - منهاج جزائري (نسخة مبدئية)</title>
 
   <!-- html2pdf -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-  <!-- MathJax for equations -->
+  <!-- MathJax -->
   <script id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
   </script>
 
   <style>
-    :root{ --accent:#0b66a0; --paper:#ffffff; --bg:#eef4f8; }
-    body{ font-family: "Tahoma", "Segoe UI", Arial; direction: rtl; background:var(--bg); padding:18px; }
-    h1,h2,h3{ margin:0 0 8px 0; }
-    .app{ max-width:1100px; margin:0 auto; display:flex; gap:18px; }
-    .form { flex:1; background:#fff; padding:12px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-    .previewWrap { width:750px; }
-    label{ display:block; margin:8px 0 4px; font-weight:700; }
-    input[type=text], textarea, select { width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; }
+    :root{ --accent:#0b66a0; --bg:#eef4f8; --paper:#fff; }
+    body{ font-family: "Tahoma", "Segoe UI", Arial; direction: rtl; background:var(--bg); padding:16px; color:#111; }
+    .container{ max-width:1200px; margin:0 auto; display:flex; gap:18px; }
+    .panel { flex:1; background:#fff; padding:12px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    input[type=text], textarea, select { width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; }
     textarea{ min-height:70px; }
     .btn { background:var(--accent); color:#fff; border:none; padding:10px 12px; border-radius:8px; cursor:pointer; margin-top:8px; }
-    .lesson { border:1px dashed #cfe6f2; padding:8px; margin-bottom:10px; border-radius:6px; background:#fbfeff; }
-    .controls-row { display:flex; gap:8px; }
+    .btn-danger { background:#c33; }
+    .lesson { border:1px dashed #cfe6f2; padding:8px; margin-bottom:10px; border-radius:6px; }
     .small{ font-size:13px; color:#555; }
-
-    /* --- PDF / page styles --- */
-    #book { background:var(--paper); padding:18mm; color:#111; box-shadow:0 6px 18px rgba(0,0,0,0.16); }
+    #book { background:var(--paper); padding:18mm; color:#111; box-shadow:0 6px 18px rgba(0,0,0,0.12); }
     .cover { text-align:center; padding-top:30mm; padding-bottom:20mm; }
-    .cover h1{ font-size:34px; color:var(--accent); }
-    .cover .meta{ margin-top:20px; font-size:16px; }
+    .cover h1{ font-size:34px; color:var(--accent); margin:0; }
     .toc { margin-top:8mm; margin-bottom:8mm; }
     .lessonPage { page-break-after: always; margin-bottom:6mm; }
     .lessonHeader { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--accent); padding-bottom:6px; margin-bottom:8px; }
     .sectionBox { border-left:6px solid var(--accent); padding:8px; background:#fbfdff; margin-bottom:8px; }
     img.content-img{ max-width:100%; height:auto; border:1px solid #ddd; margin-top:6px; }
-
-    /* Ensure page size for A4 when printing */
-    @media print {
-      body { background: white; }
-      .app, .form, .btn { display:none; } /* hide UI when printing if using print */
-      #book { box-shadow:none; width:210mm; min-height:297mm; padding:20mm; }
-      .lessonPage { page-break-after: always; }
-    }
   </style>
 </head>
 <body>
 
-<div class="app">
-  <div class="form">
-    <h2>إعداد المذكرة (مذكرة كاملة)</h2>
+<h2>مولّد مذكرات (نسخة مبدئية مملوءة بقاعدة دروس)</h2>
+<p class="small">هذه نسخة واحدة في ملف واحد. يمكنك تعديل/إضافة دروس في قسم "قاعدة البيانات" داخل الكود.</p>
 
-    <label>اسم الأستاذ (سيظهر في الغلاف):</label>
-    <input id="teacher" type="text" placeholder="اكتب اسمك هنا (مثلاً: د. علي بن محمد)" value="الأستاذ: د. مثال" />
+<div class="container">
+  <div class="panel" style="flex:0.45;">
+    <label>اسم المؤلف / الأستاذ:</label>
+    <input id="teacher" value="الأستاذ: د. اسمك هنا" />
 
-    <label>اسم المؤسسة / سنة:</label>
-    <input id="school" type="text" placeholder="مثلاً: مدرسة النور - السنة الدراسية 2025" value="متوسطة المثال — 2025" />
+    <label style="margin-top:8px;">اسم المؤسسة / السنة:</label>
+    <input id="school" value="متوسطة - السنة الدراسية 2025" />
 
-    <label>مستوى المذكرة:</label>
-    <select id="level">
-      <option>متوسط 1</option>
-      <option>متوسط 2</option>
-      <option>متوسط 3</option>
+    <label style="margin-top:8px;">اختر المستوى:</label>
+    <select id="levelSelect">
+      <option value="1 متوسط">1 متوسط</option>
+      <option value="2 متوسط">2 متوسط</option>
+      <option value="3 متوسط">3 متوسط</option>
+      <option value="4 متوسط">4 متوسط</option>
     </select>
+
+    <div style="display:flex; gap:8px; margin-top:10px;">
+      <button id="fillLevel" class="btn">املأ الدروس من المنهاج للمستوى</button>
+      <button id="clearLessons" class="btn btn-danger">مسح الدروس المعروضة</button>
+    </div>
 
     <hr />
 
-    <div style="display:flex; gap:8px; align-items:center;">
-      <button id="addLesson" class="btn">+ إضافة درس جديد</button>
-      <button id="clearAll" class="btn" style="background:#b33">مسح كل الدروس</button>
+    <div style="display:flex; gap:8px;">
+      <button id="addManual" class="btn">+ إضافة درس يدوي</button>
+      <button id="addAllLevels" class="btn">املأ كامل المستويات (كلها)</button>
     </div>
 
-    <div id="lessonsContainer" style="margin-top:12px; max-height:52vh; overflow:auto;"></div>
+    <div style="margin-top:10px;" class="small">الدروس المضافة قابلة للتعديل يدوياً قبل التوليد.</div>
 
-    <div style="margin-top:10px;">
-      <button id="renderBtn" class="btn">عرض معاينة المذكرة</button>
-      <button id="makePdfBtn" class="btn">تنزيل المذكرة كـ PDF</button>
-      <div class="small" style="margin-top:6px;">ملاحظة: استخدم زر "إضافة درس" لإضافة أي عدد من الدروس. يدعم MathJax لكتابة المعادلات بين \\( ... \\) أو \\[ ... \\]</div>
+    <div id="lessonsContainer" style="margin-top:12px; max-height:56vh; overflow:auto;"></div>
+
+    <div style="margin-top:12px;">
+      <button id="previewBtn" class="btn">عرض المذكرة</button>
+      <button id="pdfBtn" class="btn">تنزيل PDF</button>
     </div>
+
   </div>
 
-  <div class="previewWrap">
-    <h3>معاينة المذكرة (ستظهر هنا قبل التحويل)</h3>
-    <div id="preview" style="display:block;">
-
-      <!-- المكان الذي سيملأ به السكربت محتوى المذكرة -->
-      <div id="book"></div>
-
-    </div>
+  <div class="panel" style="flex:0.55;">
+    <h3>معاينة المذكرة</h3>
+    <div id="book" ></div>
   </div>
 </div>
 
 <script>
-  // Helpers
-  const lessonsContainer = document.getElementById('lessonsContainer');
-  const book = document.getElementById('book');
-  let lessonCount = 0;
+/* ==========================
+   قاعدة بيانات الدروس (مبدئية — يمكنك توسيعها)
+   كل درس: title, desc, examples, exercises, solutions, image (base64 optional)
+   ========================== */
+const curriculum = {
+  "1 متوسط": [
+    {
+      title: "الأعداد الصحيحة والنسبية",
+      desc: "مراجعة للأعداد الصحيحة، ترتيبها، مسائل على الجمع والطرح والضرب والقسمة.\nيمكن كتابة معادلات: \\(2x+3=7\\).",
+      examples: "مثال: احسب قيمة 3×(-4) + 5.\nمثال: إيجاد المقام المشترك.",
+      exercises: "1) احسب: \\( -3 + 7 \\)\n2) أوجد: \\( \\frac{2}{3} + \\frac{1}{6} \\)",
+      solutions: "حل 1: 4\nحل 2: \\( \\frac{5}{6} \\)"
+    },
+    {
+      title: "الكسور والأعداد العشرية",
+      desc: "تعريف الكسر الاعتيادي والكسور المكافئة وتحويلها إلى عشرية والعكس.",
+      examples: "مثال: حول \\(\\frac{3}{4}\\) إلى عدد عشري.\nمثال: جمع كسور.",
+      exercises: "1) حول \\(0.75\\) إلى كسر.\n2) اجمع \\(\\frac{2}{5}+\\frac{1}{3}\\).",
+      solutions: "حل 1: \\(\\frac{3}{4}\\)\nحل 2: \\(\\frac{11}{15}\\)"
+    },
+    {
+      title: "القياس ووحدات الطول والكتلة",
+      desc: "تحويل الوحدات بين مم، سم، م، كم، وحدات الكتلة غرام وكيلوغرام.",
+      examples: "مثال: تحويل 2500 م إلى كم.\nمثال: تحويل 1200 غ إلى كغ.",
+      exercises: "1) حوّل 3500 م إلى كم.\n2) حوّل 4500 غ إلى كغ.",
+      solutions: "حل 1: 3.5 كم\nحل 2: 4.5 كغ"
+    }
+  ],
+  "2 متوسط": [
+    {
+      title: "المعادلات الخطية البسيطة",
+      desc: "حل المعادلات من الدرجة الأولى في مجهول واحد: \\(ax+b=0\\).",
+      examples: "مثال: حل \\(2x+3=11\\).\nمثال: حل \\(5x-7=13\\).",
+      exercises: "1) حل: \\(3x+4=13\\)\n2) حل: \\(7x-2=19\\)",
+      solutions: "حل1: \\(x=3\\)\nحل2: \\(x=3\\)"
+    },
+    {
+      title: "الهندسة: المستقيمات والزوايا",
+      desc: "المستقيمات، الزاوية، أنواع الزوايا، الزوايا المتكاملة والمتجاورة.",
+      examples: "مثال: قياس الزاويتين إذا كانت متكاملتين.",
+      exercises: "1) إذا كانت زاوية A = 40°، فما قياس زاوية متكاملة معها؟",
+      solutions: "حل: 140°"
+    },
+    {
+      title: "النسب والتناسب",
+      desc: "مفهوم النسبة، إيجاد النِّسب المئوية والحل بمبدأ التناسب.",
+      examples: "مثال: إذا كانت النسبة 2:3، فما الجزء من كل 10؟",
+      exercises: "1) حل النسبة: \\(\\frac{2}{5}=\\frac{x}{20}\\).",
+      solutions: "حل: \\(x=8\\)"
+    }
+  ],
+  "3 متوسط": [
+    {
+      title: "المتتابعات والهندسة التحليلية البسيطة",
+      desc: "المتتابعات الحسابية والهندسية، أساسيات المستقيمات بمعادلة \\(y=mx+c\\).",
+      examples: "مثال: متتابعة حسابية بفرق 3 تبدأ من 2: 2,5,8,...",
+      exercises: "1) أوجد الحد الخامس.\n2) اكتب معادلة مستقيم مًا ممرًا بنقطتين.",
+      solutions: "حلون مختصرة في نهاية الدرس."
+    },
+    {
+      title: "المثلثات وعلاقات جيوب التمام (مقدمة)",
+      desc: "مفاهيم القاعدة والارتفاع، نظرية فيثاغورس، وحلول مسائل بسيطة.",
+      examples: "مثال: مثلث قائم أضلاعه 3 و4 و5.",
+      exercises: "1) برهن أن المثلث قائم إذا كان أطواله 6،8،10.",
+      solutions: "حل: طبق فيثاغورس."
+    }
+  ],
+  "4 متوسط": [
+    {
+      title: "الدوال الخطية والتناسبية",
+      desc: "تمهيد للدوال الخطية، مفهوم التناسب والتمثيل البياني.",
+      examples: "مثال: تمثيل الدالة \\(y=2x+1\\).",
+      exercises: "1) ارسم الدالة.\n2) جد ميل المستقيم المار بنقطتين.",
+      solutions: "حلول مُختصرة."
+    },
+    {
+      title: "الإحصاء والاحتمالات الأساسية",
+      desc: "المتوسط الحسابي، الوسيط، التكرارات، ومسائل احتمال بسيطة.",
+      examples: "مثال: حساب المتوسط لمجموعة أرقام.",
+      exercises: "1) احسب المتوسط للـ [3,5,7,9].",
+      solutions: "حل: 6"
+    }
+  ]
+};
 
-  function makeLessonForm(prefill = {}) {
-    lessonCount++;
-    const id = 'lesson_' + lessonCount;
-    const el = document.createElement('div');
-    el.className = 'lesson';
-    el.id = id;
-    el.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <strong>درس ${lessonCount}</strong>
-        <div style="display:flex; gap:6px">
-          <button class="btn btn-remove" style="background:#c33">حذف</button>
-        </div>
-      </div>
+/* ==========================
+   نهاية قاعدة البيانات
+   ========================== */
 
-      <label>عنوان الدرس:</label>
-      <input class="l-title" type="text" value="${prefill.title||''}" />
+/* UI و وظائف */
+const lessonsContainer = document.getElementById('lessonsContainer');
+const book = document.getElementById('book');
 
-      <label>شرح الدرس (يمكن كتابة معادلات MathJax):</label>
-      <textarea class="l-desc">${prefill.desc||''}</textarea>
+function makeLessonForm(prefill = {}) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'lesson';
+  wrapper.innerHTML = `
+    <label>عنوان الدرس:</label>
+    <input class="l-title" type="text" value="${escape(prefill.title||'')}" />
 
-      <label>أمثلة (ضع كل مثال بسطر):</label>
-      <textarea class="l-ex">${prefill.examples||''}</textarea>
+    <label>نص الشرح (يمكن MathJax):</label>
+    <textarea class="l-desc">${escape(prefill.desc||'')}</textarea>
 
-      <label>تمارين (ضع كل تمرين بسطر):</label>
-      <textarea class="l-q">${prefill.exercises||''}</textarea>
+    <label>أمثلة (كل سطر مثال):</label>
+    <textarea class="l-ex">${escape(prefill.examples||'')}</textarea>
 
-      <label>حلول قصيرة (اختياري):</label>
-      <textarea class="l-sol">${prefill.solutions||''}</textarea>
+    <label>تمارين (كل سطر تمرين):</label>
+    <textarea class="l-q">${escape(prefill.exercises||'')}</textarea>
 
-      <label>صورة توضيحية (اختياري):</label>
+    <label>حلول قصيرة (اختياري):</label>
+    <textarea class="l-sol">${escape(prefill.solutions||'')}</textarea>
+
+    <div style="display:flex; gap:8px; margin-top:8px;">
       <input type="file" accept="image/*" class="l-img" />
-      <div class="small img-name"></div>
-    `;
+      <button class="btn btn-remove" style="background:#c33">حذف درس</button>
+    </div>
+    <div class="small img-name"></div>
+  `;
+  lessonsContainer.appendChild(wrapper);
 
-    lessonsContainer.appendChild(el);
-
-    // remove handler
-    el.querySelector('.btn-remove').addEventListener('click', ()=> {
-      el.remove();
-      rebuildPreview(); // refresh
-    });
-
-    // image load
-    const imgInput = el.querySelector('.l-img');
-    const imgNameDiv = el.querySelector('.img-name');
-    imgInput.addEventListener('change', (e)=>{
-      const f = e.target.files[0];
-      if(!f) return;
-      imgNameDiv.textContent = f.name;
-      const reader = new FileReader();
-      reader.onload = ()=> {
-        el.dataset.img = reader.result;
-      };
-      reader.readAsDataURL(f);
-    });
-
-    // update preview on change
-    el.querySelectorAll('input, textarea').forEach(inp=>{
-      inp.addEventListener('input', () => rebuildPreview());
-    });
-
-    return el;
-  }
-
-  document.getElementById('addLesson').addEventListener('click', ()=> {
-    makeLessonForm();
-  });
-
-  document.getElementById('clearAll').addEventListener('click', ()=> {
-    lessonsContainer.innerHTML = '';
-    lessonCount = 0;
+  // إزالة
+  wrapper.querySelector('.btn-remove').addEventListener('click', ()=> {
+    wrapper.remove();
     rebuildPreview();
   });
 
-  function getAllLessons() {
-    const nodes = Array.from(lessonsContainer.querySelectorAll('.lesson'));
-    return nodes.map((node, i) => {
-      return {
-        title: node.querySelector('.l-title').value || `درس ${i+1}`,
-        desc: node.querySelector('.l-desc').value || '',
-        examples: node.querySelector('.l-ex').value || '',
-        exercises: node.querySelector('.l-q').value || '',
-        solutions: node.querySelector('.l-sol').value || '',
-        image: node.dataset.img || null
-      };
-    });
+  // تحميل صورة
+  const imgInp = wrapper.querySelector('.l-img');
+  const imgName = wrapper.querySelector('.img-name');
+  imgInp.addEventListener('change', e => {
+    const f = e.target.files[0];
+    if(!f) return;
+    imgName.textContent = f.name;
+    const reader = new FileReader();
+    reader.onload = () => wrapper.dataset.img = reader.result;
+    reader.readAsDataURL(f);
+  });
+
+  // تحديث المعاينة عند التعديل
+  wrapper.querySelectorAll('input, textarea').forEach(i => i.addEventListener('input', rebuildPreview));
+  return wrapper;
+}
+
+function escape(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+function getAllLessons(){
+  const nodes = Array.from(lessonsContainer.querySelectorAll('.lesson'));
+  return nodes.map((n, idx) => ({
+    title: n.querySelector('.l-title').value || `درس ${idx+1}`,
+    desc: n.querySelector('.l-desc').value || '',
+    examples: n.querySelector('.l-ex').value || '',
+    exercises: n.querySelector('.l-q').value || '',
+    solutions: n.querySelector('.l-sol').value || '',
+    image: n.dataset.img || null
+  }));
+}
+
+/* أزرار الواجهة */
+document.getElementById('addManual').addEventListener('click', ()=> { makeLessonForm(); });
+document.getElementById('clearLessons').addEventListener('click', ()=> { lessonsContainer.innerHTML=''; rebuildPreview(); });
+document.getElementById('fillLevel').addEventListener('click', ()=> {
+  const lv = document.getElementById('levelSelect').value;
+  const arr = curriculum[lv] || [];
+  if(arr.length===0){
+    alert('لا توجد دروس جاهزة لهذا المستوى حالياً.');
+    return;
   }
-
-  function rebuildPreview() {
-    const teacher = document.getElementById('teacher').value || '';
-    const school = document.getElementById('school').value || '';
-    const level = document.getElementById('level').value || '';
-    const lessons = getAllLessons();
-
-    // Build HTML for book
-    let html = '';
-
-    // Cover
-    html += `<div class="cover lessonPage">
-      <h1>مذكرة رياضيات</h1>
-      <div style="margin-top:10px;font-size:20px;color:var(--accent)">${level}</div>
-      <div class="meta" style="margin-top:18px">${school}</div>
-      <div class="meta" style="margin-top:30px">الأستاذ: <strong>${teacher}</strong></div>
-    </div>`;
-
-    // Table of contents
-    html += `<div class="toc lessonPage">
-      <h2>فهرس المحتويات</h2>
-      <ol>`;
-    lessons.forEach((ls, idx) => {
-      html += `<li>${ls.title || 'درس ' + (idx+1)}</li>`;
-    });
-    html += `</ol></div>`;
-
-    // Lessons
-    lessons.forEach((ls, idx) => {
-      html += `<div class="lessonPage">
-        <div class="lessonHeader">
-          <div><h2>${idx+1}. ${ls.title}</h2></div>
-          <div class="small">المستوى: ${level}</div>
-        </div>
-
-        <div class="sectionBox">
-          <strong>الشرح:</strong>
-          <div style="margin-top:6px">${nl2br(escapeHtml(ls.desc))}</div>
-        </div>`;
-
-      if(ls.image){
-        html += `<div class="sectionBox">
-          <strong>صورة توضيحية:</strong>
-          <div><img class="content-img" src="${ls.image}" alt="صورة توضيحية" /></div>
-        </div>`;
-      }
-
-      if(ls.examples.trim()){
-        html += `<div class="sectionBox">
-          <strong>أمثلة:</strong>
-          <ol>`;
-        ls.examples.split(/\n/).filter(s=>s.trim()).forEach(ex => {
-          html += `<li>${escapeHtml(ex)}</li>`;
-        });
-        html += `</ol></div>`;
-      }
-
-      if(ls.exercises.trim()){
-        html += `<div class="sectionBox">
-          <strong>تمارين:</strong>
-          <ol>`;
-        ls.exercises.split(/\n/).filter(s=>s.trim()).forEach(q => {
-          html += `<li>${escapeHtml(q)}</li>`;
-        });
-        html += `</ol></div>`;
-      }
-
-      if(ls.solutions.trim()){
-        html += `<div class="sectionBox">
-          <strong>حلول قصيرة:</strong>
-          <div>${nl2br(escapeHtml(ls.solutions))}</div>
-        </div>`;
-      }
-
-      html += `</div>`; // lessonPage
-    });
-
-    // Footer / credits
-    html += `<div class="lessonPage" style="text-align:center;padding-top:80px;">
-      <div class="small">تم إنشاؤها بواسطة مولد المذكرات — ${new Date().getFullYear()}</div>
-    </div>`;
-
-    book.innerHTML = html;
-
-    // render math if any
-    if(window.MathJax) MathJax.typesetPromise();
-  }
-
-  // utilities
-  function nl2br(str){ return str.replace(/\n/g, '<br/>'); }
-  function escapeHtml(text) {
-    if(!text) return '';
-    return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  // initial
-  makeLessonForm({ title: 'المستقيمات والتوازي', desc: 'تعريف المستقيم... \\(y=mx+c\\) مثال: \\(2x+3y=6\\).', examples: 'مثال 1: احسب ...\nمثال 2: اثبت ...', exercises: 'تمرين 1: ...\nتمرين 2: ...', solutions: 'حل 1: ...' });
-  makeLessonForm({ title: 'الزوايا والمثلثات', desc: 'مفاهيم أساسية في الزوايا والمثلثات.', examples: 'مثال: مثلث قائم الزاوية...', exercises: 'تمرين: احسب قيمة ...', solutions: '' });
+  // نضيف كل درس من القاعدة
+  arr.forEach(d => makeLessonForm(d));
   rebuildPreview();
+});
+document.getElementById('addAllLevels').addEventListener('click', ()=> {
+  Object.keys(curriculum).forEach(lv => curriculum[lv].forEach(d => makeLessonForm(d)));
+  rebuildPreview();
+});
 
-  document.getElementById('renderBtn').addEventListener('click', ()=> {
-    rebuildPreview();
-    // give MathJax time then scroll
-    MathJax.typesetPromise().then(()=> {
-      book.scrollIntoView({behavior:'smooth'});
-    });
+document.getElementById('previewBtn').addEventListener('click', ()=> { rebuildPreview(); MathJax.typesetPromise().then(()=> { book.scrollIntoView({behavior:'smooth'}); }); });
+document.getElementById('pdfBtn').addEventListener('click', ()=> {
+  rebuildPreview();
+  MathJax.typesetPromise().then(()=> {
+    const opt = {
+      margin:       [12,10,12,10],
+      filename:     (document.getElementById('teacher').value || 'mouadara') + '.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    // Clone book to avoid UI elements
+    const element = book.cloneNode(true);
+    element.style.background = 'white';
+    html2pdf().set(opt).from(element).save();
+  });
+});
+
+/* بناء المعاينة / المذكرة */
+function rebuildPreview(){
+  const teacher = document.getElementById('teacher').value || '';
+  const school = document.getElementById('school').value || '';
+  const level = document.getElementById('levelSelect').value || '';
+
+  const lessons = getAllLessons();
+
+  let html = '';
+  // غلاف
+  html += `<div class="cover lessonPage">
+    <h1>مذكرة رياضيات</h1>
+    <div style="margin-top:8px;font-size:18px;color:var(--accent)">${level}</div>
+    <div style="margin-top:12px;font-size:16px">${school}</div>
+    <div style="margin-top:20px;font-size:16px">${teacher}</div>
+  </div>`;
+
+  // فهرس
+  html += `<div class="toc lessonPage"><h2>فهرس المحتويات</h2><ol>`;
+  lessons.forEach((ls, i) => html += `<li>${escapeHTML(ls.title || 'درس '+(i+1))}</li>`);
+  html += `</ol></div>`;
+
+  // كل درس صفحة
+  lessons.forEach((ls, idx) => {
+    html += `<div class="lessonPage">
+      <div class="lessonHeader">
+        <div><h2>${escapeHTML((idx+1)+'. '+(ls.title||'درس'))}</h2></div>
+        <div class="small">المستوى: ${escapeHTML(level)}</div>
+      </div>
+      <div class="sectionBox"><strong>الشرح:</strong><div style="margin-top:6px">${nl2br(ls.desc)}</div></div>`;
+
+    if(ls.image){
+      html += `<div class="sectionBox"><strong>صورة توضيحية:</strong><div><img class="content-img" src="${ls.image}" /></div></div>`;
+    }
+
+    if((ls.examples||'').trim()){
+      html += `<div class="sectionBox"><strong>أمثلة:</strong><ol>`;
+      ls.examples.split(/\n/).filter(s=>s.trim()).forEach(ex => html += `<li>${escapeHTML(ex)}</li>`);
+      html += `</ol></div>`;
+    }
+
+    if((ls.exercises||'').trim()){
+      html += `<div class="sectionBox"><strong>تمارين:</strong><ol>`;
+      ls.exercises.split(/\n/).filter(s=>s.trim()).forEach(q => html += `<li>${escapeHTML(q)}</li>`);
+      html += `</ol></div>`;
+    }
+
+    if((ls.solutions||'').trim()){
+      html += `<div class="sectionBox"><strong>حلول قصيرة:</strong><div>${nl2br(ls.solutions)}</div></div>`;
+    }
+
+    html += `</div>`;
   });
 
-  document.getElementById('makePdfBtn').addEventListener('click', ()=> {
-    rebuildPreview();
-    MathJax.typesetPromise().then(()=> {
-      // options for html2pdf
-      const opt = {
-        margin:       [10,10,10,10],
-        filename:     (document.getElementById('teacher').value || 'mouadara') + '.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      // clone book to avoid UI interference
-      const element = book.cloneNode(true);
-      // ensure fonts/background present
-      element.style.background = 'white';
-      // run converter
-      html2pdf().set(opt).from(element).save();
-    });
-  });
+  // صفحة النهاية
+  html += `<div class="lessonPage" style="text-align:center;padding-top:40px;"><div class="small">مولّد المذكرات — ${new Date().getFullYear()}</div></div>`;
+
+  book.innerHTML = html;
+  // render math expressions
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+function nl2br(s){ if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\\n/g,'<br/>').replace(/\n/g,'<br/>'); }
+function escapeHTML(s){ if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+/* ابدأ بملء تلقائي بدروس عن طريق زر أو ترك المستخدم يملأ */
+rebuildPreview();
 </script>
 
 </body>
