@@ -2,49 +2,96 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8"/>
-  <title>AI Prof Dali Nadjib — مولد مذكرة</title>
+  <title>AI Prof Dali Nadjib — مولد مذكرات</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
   <style>
     body{background:#0b0f14;color:#e6eef6;font-family:'Noto Naskh Arabic',Arial;padding:20px;}
-    .btn{background:linear-gradient(90deg,#00d1ff,#9cff5f);color:#031018;font-weight:700;padding:12px 20px;border-radius:10px;border:none;cursor:pointer;}
+    .field{margin:10px 0;}
+    label{display:block;margin-bottom:5px;}
+    input,select{padding:8px;width:100%;border-radius:6px;border:none;}
+    .btn{margin-top:15px;background:linear-gradient(90deg,#00d1ff,#9cff5f);
+         color:#031018;font-weight:700;padding:12px 20px;border-radius:10px;border:none;cursor:pointer;}
     h1{color:#00d1ff;}
   </style>
 </head>
 <body>
   <h1>AI Prof Dali Nadjib</h1>
-  <p>مولد مذكرات رياضيات — نموذج درس "الجذر التربيعي لعدد موجب"</p>
+  <p>اختر الأستاذ، المؤسسة، المستوى، والدرس ثم اضغط لتوليد مذكرة PDF.</p>
+
+  <div class="field">
+    <label>اسم الأستاذ</label>
+    <input id="teacher" value="الأستاذ: دالي نجيب">
+  </div>
+
+  <div class="field">
+    <label>اسم المؤسسة</label>
+    <input id="school" value="متوسطة النجاح">
+  </div>
+
+  <div class="field">
+    <label>المستوى</label>
+    <select id="level">
+      <option>السنة الرابعة متوسط</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>اختر الدرس</label>
+    <select id="lesson">
+      <option value="sqrt">الجذر التربيعي لعدد موجب</option>
+    </select>
+  </div>
+
   <button class="btn" onclick="generate()">توليد مذكرة PDF</button>
 
 <script>
+const lessons = {
+  "sqrt":{
+    title:"الجذر التربيعي لعدد موجب",
+    table:[
+      [
+        'مقدمة: مراجعة الأعداد الطبيعية والجذور',
+        'تعريف الجذر التربيعي وتبسيط الجذور',
+        'سبورة + كتاب مدرسي',
+        'شرح: إذا كان a ≥ 0 فإن √a هو العدد الموجب x بحيث x²=a.\nخواص: √(ab)=√a√b ، √(a/b)=√a/√b.\nأمثلة: √72=6√2 ، √98=7√2.',
+        ''
+      ],
+      [
+        'وضعيات تعلمية',
+        'ترسيخ القاعدة',
+        'تمارين تطبيقية',
+        '1. √49 و √0.25\n2. √98\n3. √(81/16)',
+        ''
+      ],
+      [
+        'التقويم والدعم',
+        'التأكد من الفهم',
+        '',
+        'حلول:\n√49=7 ، √0.25=0.5\n√98=7√2\n√(81/16)=9/4',
+        ''
+      ]
+    ]
+  }
+};
+
 function generate(){
-  const docDefinition = {
-    content: [
-      {
-        text: 'الجمهورية الجزائرية الديمقراطية الشعبية',
-        alignment: 'center',
-        style: 'small'
-      },
-      {
-        text: 'مذكرة في مادة الرياضيات',
-        style: 'coverTitle',
-        alignment: 'center',
-        margin:[0,10,0,20]
-      },
-      {
-        text: 'المستوى: السنة الرابعة متوسط',
-        alignment: 'center',
-        style:'coverSub'
-      },
-      {
-        text: 'عنوان الدرس: الجذر التربيعي لعدد موجب',
-        alignment: 'center',
-        style:'coverSub',
-        margin:[0,10,0,40]
-      },
+  const teacher=document.getElementById("teacher").value;
+  const school=document.getElementById("school").value;
+  const level=document.getElementById("level").value;
+  const lessonKey=document.getElementById("lesson").value;
+  const lesson=lessons[lessonKey];
+
+  const docDefinition={
+    content:[
+      {text:'الجمهورية الجزائرية الديمقراطية الشعبية',alignment:'center',style:'small'},
+      {text:'مذكرة في مادة الرياضيات',style:'coverTitle',alignment:'center',margin:[0,10,0,20]},
+      {text:level,alignment:'center',style:'coverSub'},
+      {text:'الدرس: '+lesson.title,alignment:'center',style:'coverSub',margin:[0,10,0,20]},
+      {text:teacher+" — "+school,alignment:'center',margin:[0,0,0,40]},
       {
         table:{
-          widths: ['20%','20%','20%','30%','10%'],
+          widths:['20%','20%','20%','30%','10%'],
           body:[
             [
               {text:'الوضعية التعليمية',style:'th'},
@@ -53,49 +100,12 @@ function generate(){
               {text:'الأنشطة',style:'th'},
               {text:'ملاحظات',style:'th'}
             ],
-            [
-              'مقدمة: مراجعة الأعداد الطبيعية والجذور',
-              [
-                '• تعريف الجذر التربيعي لعدد موجب',
-                '• تبسيط الجذور',
-                '• استعمال الخواص في مسائل'
-              ].join('\n'),
-              'سبورة + كتاب مدرسي',
-              [
-                'شرح تعريف: إذا كان a ≥ 0 فإن √a هو العدد الموجب x بحيث x²=a.',
-                'خواص: √(ab)=√a√b ، √(a/b)=√a/√b.',
-                'أمثلة: √72=6√2 ، √98=7√2.'
-              ].join('\n\n'),
-              ''
-            ],
-            [
-              'وضعيات تعلمية',
-              'ترسيخ القاعدة',
-              'تمارين تطبيقية',
-              [
-                '1. احسب: √49 و √0.25',
-                '2. بسط: √98',
-                '3. أوجد: √(81/16)'
-              ].join('\n'),
-              ''
-            ],
-            [
-              'التقويم والدعم',
-              'التأكد من الفهم',
-              '',
-              [
-                'حلول قصيرة:',
-                '√49=7 ، √0.25=0.5',
-                '√98=7√2',
-                '√(81/16)=9/4'
-              ].join('\n'),
-              ''
-            ]
+            ...lesson.table
           ]
         },
         layout:'lightHorizontalLines'
       },
-      {text:'\nالمصدر: مذكرة رابعة متوسط — تم الإنشاء بواسطة AI Prof Dali Nadjib',style:'footer',alignment:'center'}
+      {text:'\nتم الإنشاء بواسطة AI Prof Dali Nadjib',style:'footer',alignment:'center'}
     ],
     styles:{
       coverTitle:{fontSize:22,bold:true,color:'#00d1ff'},
@@ -106,7 +116,8 @@ function generate(){
     },
     defaultStyle:{font:'Helvetica',fontSize:12}
   };
-  pdfMake.createPdf(docDefinition).download("مذكرة_الجذر_التربيعي.pdf");
+
+  pdfMake.createPdf(docDefinition).download("مذكرة_"+lesson.title+".pdf");
 }
 </script>
 </body>
