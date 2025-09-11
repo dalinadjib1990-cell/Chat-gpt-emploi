@@ -3,240 +3,266 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>مولّد مذكرات — اضغط زر واصدر مذكرة باسمك</title>
+  <title>AI Prof Dali Nadjib — مولد المذكرة</title>
 
   <!-- Dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
   <script id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-  </script>
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
-    :root{ --accent:#0b66a0; --muted:#65707a; --bg:#f5f8fb; --paper:#fff; }
-    body{ font-family: "Segoe UI", Tahoma, "Noto Naskh Arabic", Arial; direction: rtl; background:var(--bg); margin:0; padding:18px; color:#111; }
-    .app{ max-width:1100px; margin:0 auto; display:flex; gap:18px; }
-    .panel{ background:var(--paper); padding:14px; border-radius:10px; box-shadow:0 6px 18px rgba(15,30,45,0.06); }
-    .left{ width:380px; flex:0 0 380px; }
-    .right{ flex:1; }
-    h1{ margin:0 0 8px 0; color:var(--accent); font-size:20px; }
-    label{ display:block; margin:10px 0 6px; font-weight:700; }
-    input[type=text], select { width:100%; padding:8px; border:1px solid #e1e9f2; border-radius:8px; box-sizing:border-box; }
-    .btn{ display:inline-block; background:var(--accent); color:#fff; padding:10px 12px; border-radius:8px; border:none; cursor:pointer; margin-top:10px; }
-    .btn-ghost{ background:transparent; border:1px solid #e1e9f2; color:#222; }
-    .small{ font-size:13px; color:var(--muted); margin-top:8px; }
-    #book{ background:var(--paper); padding:18mm; color:#111; box-shadow:0 6px 18px rgba(0,0,0,0.12); min-height:297mm; width:210mm; margin:10px auto; }
-    .cover{ text-align:center; padding-top:22mm; padding-bottom:12mm; }
-    .cover h2{ font-size:34px; color:var(--accent); margin:0; }
-    .toc{ margin-top:12mm; margin-bottom:12mm; }
+    :root{
+      --bg:#0b0f14;
+      --panel:#0f1720;
+      --accent:#00d1ff; /* neon cyan */
+      --accent2:#9cff5f; /* neon green */
+      --accent3:#ff9f43; /* orange */
+      --muted:#94a3b8;
+      --paper:#0b0f14;
+      --soft:#0b1220;
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family: "Noto Naskh Arabic", "Segoe UI", Tahoma, Arial; direction:rtl; background:linear-gradient(180deg,#05060a,#0b0f14 40%); color:#e6eef6; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+    .app{ max-width:1200px; margin:18px auto; display:grid; grid-template-columns:360px 1fr; gap:18px; padding:12px; }
+    .card{ background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:16px; box-shadow:0 8px 30px rgba(2,6,23,0.6); }
+    .header{ display:flex; align-items:center; gap:12px; }
+    .logo{ width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#031018; font-weight:700; font-size:14px; }
+    h1{ margin:0; font-size:18px; color:var(--accent); }
+    .subtitle{ color:var(--muted); margin-top:6px; font-size:13px; }
+
+    label{ display:block; margin:12px 0 6px; color:var(--muted); font-weight:700; font-size:13px;}
+    input[type=text], select{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.01); color:#eaf6ff; outline:none; font-size:14px;}
+    .controls{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+    .btn{ cursor:pointer; padding:10px 14px; border-radius:10px; border:none; font-weight:700; }
+    .btn-main{ background: linear-gradient(90deg,var(--accent),var(--accent2)); color:#031018; box-shadow:0 6px 18px rgba(0,209,255,0.08); }
+    .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--muted); }
+    .small{ color:var(--muted); font-size:13px; margin-top:10px; }
+
+    /* right area - preview */
+    .previewWrap{ padding:12px; overflow:auto; min-height:640px; }
+    #preview{ width:210mm; margin:12px auto; background: #f7f9fb; color:#061026; padding:18mm; border-radius:6px; box-shadow:0 12px 36px rgba(2,6,23,0.6); }
+    .cover{ text-align:center; background:linear-gradient(180deg,#071021,#071a2a); color:white; padding:22mm 12px; border-radius:6px; }
+    .cover h2{ margin:0; font-size:28px; letter-spacing:1px; color:var(--accent); }
+    .cover .meta{ margin-top:12px; color: #dceff7; font-size:15px; }
+    .appname{ margin-top:18px; color:var(--accent2); font-weight:800; font-size:13px; padding:6px 10px; border-radius:999px; display:inline-block; background:rgba(156,255,95,0.08); }
+
+    .toc{ margin:18px 0; }
     .lessonPage{ page-break-after: always; margin-bottom:6mm; }
-    .lessonHeader{ display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--accent); padding-bottom:6px; margin-bottom:10px; }
-    .section{ border-left:6px solid var(--accent); background:#fbfeff; padding:10px; margin-bottom:8px; border-radius:4px; }
-    img.content-img{ max-width:100%; height:auto; border:1px solid #ddd; margin-top:8px; }
-    .controls-row{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
-    @media (max-width:900px){
-      .app{ flex-direction:column; }
-      .left{ width:auto; }
-      #book{ width:100%; padding:12px; box-shadow:none; }
+    .lessonHeader{ display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e6f9ff; padding-bottom:8px; margin-bottom:12px; }
+    .lessonTitle{ font-size:20px; color:#052033; margin:0; }
+    .metaSmall{ color:#36546a; font-size:13px; }
+    .section{ border-left:6px solid var(--accent); background:#fbfeff; padding:12px; margin-bottom:12px; border-radius:6px; color:#052033;}
+    .section strong{ color:#052033; }
+    .ol{ margin:8px 0 0 18px; color:#052033; }
+    .exampleBox{ background:linear-gradient(90deg,#f0fcff,#ffffff); padding:10px; border-radius:6px; border:1px solid #e2f6fb; color:#052033; margin-top:8px;}
+    .footer{ text-align:center; color:#274a5e; font-size:12px; margin-top:26px; }
+
+    /* mobile tweaks */
+    @media (max-width:980px){
+      .app{ grid-template-columns:1fr; padding:8px; }
+      .previewWrap{ order:2; }
+      #preview{ width:100%; padding:12mm; }
     }
   </style>
 </head>
 <body>
 
   <div class="app">
-    <div class="panel left">
-      <h1>مولّد المذكرة — سهل للأستاذ</h1>
-
-      <label>اسم الأستاذ (سيظهر على الغلاف)</label>
-      <input id="teacher" type="text" placeholder="مثلاً: الأستاذ: د. محمد علي" value="الأستاذ: د. اسمك هنا" />
-
-      <label>اسم المؤسسة / المتوسطة</label>
-      <input id="school" type="text" placeholder="مثلاً: متوسطة النجاح — 2025" value="متوسطة — 2025" />
-
-      <label>اختر المستوى</label>
-      <select id="levelSelect"></select>
-
-      <label>اختر الدرس</label>
-      <select id="lessonSelect" size="8" style="height:220px;"></select>
-
-      <div class="controls-row">
-        <button id="generateLesson" class="btn">توليد مذكرة هذا الدرس</button>
-        <button id="generateLevel" class="btn">توليد جميع دروس هذا المستوى</button>
-        <button id="generateAll" class="btn btn-ghost">توليد كامل المستويات</button>
+    <!-- LEFT CONTROLS -->
+    <div class="card">
+      <div class="header">
+        <div class="logo">AI<br/>PROF</div>
+        <div>
+          <h1>AI Prof Dali Nadjib</h1>
+          <div class="subtitle">مولد مذكرات — اضغط زر واحصل على مذكرة جاهزة</div>
+        </div>
       </div>
 
-      <div class="small">يمكنك تعديل نص أي درس لاحقاً داخل مربع التحرير إن رغبت — لكن الهدف: بضغطة زر تنتج مذكرة جاهزة باسمك.</div>
+      <label>اسم الأستاذ (يظهر داخل المذكرة)</label>
+      <input id="teacher" type="text" value="الأستاذ: د. اسمك هنا" />
+
+      <label>اسم المؤسسة / المتوسطة</label>
+      <input id="school" type="text" value="متوسطة النجاح — السنة الدراسية 2025" />
+
+      <label>اختر الدرس</label>
+      <select id="lesson" style="width:100%; padding:10px; border-radius:10px; background:rgba(255,255,255,0.01); color:#eaf6ff; border:1px solid rgba(255,255,255,0.04);">
+        <option value="sqrt">الجذر التربيعي لعدد موجب</option>
+      </select>
+
+      <div class="controls">
+        <button id="gen" class="btn btn-main">توليد مذكرة (PDF)</button>
+        <button id="previewBtn" class="btn btn-ghost">عرض معاينة</button>
+      </div>
+
+      <div class="small">خلفية التطبيق سوداء مع ألوان نيون. يمكنك تعديل اسم الأستاذ أو المتوسطة قبل التوليد.</div>
     </div>
 
-    <div class="panel right">
-      <div id="book"></div>
+    <!-- RIGHT PREVIEW -->
+    <div class="card previewWrap">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2L20 7v10l-8 5-8-5V7l8-5z" stroke="#00d1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-weight:800; color:var(--accent)">معاينة المذكرة</div>
+        </div>
+        <div class="appname">AI Prof Dali Nadjib</div>
+      </div>
+
+      <div id="preview" aria-hidden="true">
+        <!-- سيملأ سكربت الـJS محتوى المذكرة هنا -->
+      </div>
     </div>
   </div>
 
 <script>
-/* ===========================
-   قاعدة الدروس (معبأة مبدئياً)
-   هذه القاعدة قابلة للتعديل داخل الملف لاحقًا.
-   ضع هنا عناوين الدروس كما في المنهاج الرسمي إن رغبت.
-   =========================== */
-
-const curriculum = {
-  "1 متوسط": [
-    { id:"1-1", title:"الأعداد الطبيعية والعمليات الأساسية", desc:"مراجعة الأعداد الطبيعية، جمع وطرح وضرب وقسمة، ترتيب الأعداد.", examples:"مثال: 12+8=20\nمثال: 5×6=30", exercises:"1) احسب: 15-7\n2) احسب: 6×7", solutions:"حل1: 8\nحل2:42" },
-    { id:"1-2", title:"الأعداد العشرية والكسور البسيطة", desc:"الكتابة العشرية، تحويل الكسر إلى عدد عشري والعكس.", examples:"مثال: \\(\\frac{3}{4}=0.75\\)\nمثال: 0.2=\\(\\frac{1}{5}\\)", exercises:"1) حول 0.6 إلى كسر\n2) اختصر \\(\\frac{6}{9}\\)", solutions:"حل1: \\(\\frac{3}{5}\\)\nحل2: \\(\\frac{2}{3}\\)" },
-    { id:"1-3", title:"المجموعات البسيطة والتناظر المحوري", desc:"تعريف المجموعة والتناظر المحوري.", examples:"نشاط: انعكس شكل عبر محور.", exercises:"1) ارسم تناظر محوري لشكل بسيط", solutions:"حل: إظهار الرسم" },
-    { id:"1-4", title:"الهندسة البسيطة: النقطة والمستقيم والقطعة", desc:"تعريفات أساسية وطرق القياس.", examples:"مثال: رسم قطعة طولها 5 سم", exercises:"1) ارسم مستقيمًا وقطعًا", solutions:"تعريفات" }
-  ],
-
-  "2 متوسط": [
-    { id:"2-1", title:"المعادلات من الدرجة الأولى", desc:"حل المعادلات البسيطة \\(ax+b=0\\).", examples:"مثال: حل \\(2x+3=11\\).", exercises:"1) حل: \\(3x+4=13\\)\n2) حل: \\(5x-10=0\\)", solutions:"حل1: x=3\nحل2: x=2" },
-    { id:"2-2", title:"الكسور والعمليات عليها", desc:"جمع وطرح وضرب وقسمة الكسور.", examples:"مثال: \\(\\frac{2}{3}+\\frac{1}{6}\\).", exercises:"1) اجمع \\(\\frac{5}{6}+\\frac{1}{3}\\)", solutions:"حل: \\(\\frac{7}{6}\\)" },
-    { id:"2-3", title:"الهندسة: الزوايا والمستقيمات المتوازية", desc:"تعريف الزوايا وأنواعها، المستقيمات المتوازية.", examples:"مثال: إذا كانت زاوية 40° المتكاملة لها 140°.", exercises:"1) اذكر نوع الزاوية 120°", solutions:"حل: منفرجة" }
-  ],
-
-  "3 متوسط": [
-    { id:"3-1", title:"المتتابعات (مقدمة)", desc:"التعرف على المتتابعات الحسابية والهندسية وصيغ الحد العام.", examples:"مثال: متتابعة حسابية فرقها 3: 2,5,8,...", exercises:"1) جد الحد الخامس لمتتابعة تبدأ ب2 فرق3", solutions:"حل: 14" },
-    { id:"3-2", title:"الدوال الخطية والتمثيل البياني", desc:"معادلة المستقيم \\(y=mx+c\\) وتمثيلها.", examples:"مثال: ميل المستقيم المار بنقطتين", exercises:"1) جد الميل بين (1,2) و (3,6)", solutions:"حل: 2" }
-  ],
-
-  "4 متوسط": [
-    { id:"4-1", title:"الدوال والتناسبية", desc:"تعريف الدالة الخطية والتناسبية وتمثيلها.", examples:"مثال: \\(y=2x+1\\) تمثيلها.", exercises:"1) ارسم الدالة \\(y=2x+1\\)", solutions:"حل: تمثيل بياني" },
-    { id:"4-2", title:"الإحصاء والاحتمالات الأساسية", desc:"المتوسط، الوسيط، وحساب احتمال بسيط.", examples:"مثال: احتمال الحصول على وجه في رمية عملة = \\(\\frac{1}{2}\\).", exercises:"1) ما احتمال سحب كرة حمراء؟", solutions:"حل: يعتمد على عدد الكرات" }
-  ]
+/* ======== محتوى الدرس الحقيقي (مبسّط من المذكرة) ======== */
+const lessons = {
+  "sqrt": {
+    id: "4-1",
+    title: "الجذر التربيعي لعدد موجب",
+    level: "4 متوسط",
+    desc: `تعريف الجذر التربيعي للعدد الموجب وخواصه الأساسية.
+إذا كان \\(a\\ge0\\) فـ \\(\\sqrt a\\) هو العدد الموجب \\(x\\) بحيث \\(x^2=a\\).
+خواص مهمة: \\(\\sqrt{ab}=\\sqrt a\\sqrt b\\) و \\(\\sqrt{\\dfrac a b}=\\dfrac{\\sqrt a}{\\sqrt b}\\) (لـ b>0).`,
+    objectives: [
+      "تعريف الجذر التربيعي لعدد موجب",
+      "تبسيط الجذور واستخراج العوامل المربعة",
+      "حل تمارين تطبيقية تتطلب تبسيط أو حساب جذور"
+    ],
+    examples: [
+      { q: "\\sqrt{72}", a: "\\sqrt{72}=\\sqrt{36\\cdot2}=6\\sqrt2" },
+      { q: "\\sqrt{98}", a: "\\sqrt{98}=\\sqrt{49\\cdot2}=7\\sqrt2" }
+    ],
+    exercises: [
+      "احسب: \\(\\sqrt{49}\\) و \\(\\sqrt{0.25}\\).",
+      "بسط: \\(\\sqrt{98}\\).",
+      "أوجد: \\(\\sqrt{\\dfrac{81}{16}}\\)."
+    ],
+    solutions: [
+      "\\(\\sqrt{49}=7\\), \\(\\sqrt{0.25}=0.5\\).",
+      "\\(\\sqrt{98}=7\\sqrt2\\).",
+      "\\(\\sqrt{\\dfrac{81}{16}}=\\dfrac{9}{4}\\)."
+    ],
+    source: "مذكرة رابعة متوسط (المرفق)"
+  }
 };
 
-/* ===========================
-   بداية وظائف الواجهة
-   =========================== */
+/* ======== بناء HTML للمذكرة (مطابق للشكل المطلوب) ======== */
+function buildLessonBook(lessonKey){
+  const ls = lessons[lessonKey];
+  const teacher = document.getElementById('teacher').value || '';
+  const school = document.getElementById('school').value || '';
+  const appName = "AI Prof Dali Nadjib";
 
-const levelSelect = document.getElementById('levelSelect');
-const lessonSelect = document.getElementById('lessonSelect');
-const teacherInput = document.getElementById('teacher');
-const schoolInput = document.getElementById('school');
-const bookDiv = document.getElementById('book');
-
-function populateLevels(){
-  levelSelect.innerHTML = '';
-  Object.keys(curriculum).forEach(lv => {
-    const opt = document.createElement('option');
-    opt.value = lv; opt.textContent = lv;
-    levelSelect.appendChild(opt);
-  });
-}
-function populateLessonsFor(level){
-  lessonSelect.innerHTML = '';
-  const arr = curriculum[level] || [];
-  arr.forEach(d => {
-    const opt = document.createElement('option');
-    opt.value = d.id; opt.textContent = d.title;
-    lessonSelect.appendChild(opt);
-  });
-}
-
-// Build a single-lesson book HTML
-function buildBookForLessons(lessonsArray, levelLabel){
-  const teacher = escapeHTML(teacherInput.value || '');
-  const school = escapeHTML(schoolInput.value || '');
   let html = '';
-  // cover
-  html += `<div class="cover lessonPage"><h2>مذكرة رياضيات</h2><div style="margin-top:8px;color:var(--muted);font-size:16px">${escapeHTML(levelLabel)}</div><div style="margin-top:12px;font-size:16px">${school}</div><div style="margin-top:20px;font-size:16px">${teacher}</div></div>`;
-  // toc
-  html += `<div class="toc lessonPage"><h3>فهرس المحتويات</h3><ol>`;
-  lessonsArray.forEach((ls, i) => html += `<li>${escapeHTML((i+1)+'. '+ls.title)}</li>`);
-  html += `</ol></div>`;
-  // lessons pages
-  lessonsArray.forEach((ls, idx) => {
-    html += `<div class="lessonPage">`;
-    html += `<div class="lessonHeader"><div><h3>${escapeHTML((idx+1)+'. '+ls.title)}</h3></div><div class="small">المستوى: ${escapeHTML(levelLabel)}</div></div>`;
-    html += `<div class="section"><strong>الشرح:</strong><div style="margin-top:8px">${nl2br(ls.desc)}</div></div>`;
-    if(ls.examples && ls.examples.trim()){
-      html += `<div class="section"><strong>أمثلة:</strong><ol>`;
-      ls.examples.split(/\n/).filter(s=>s.trim()).forEach(ex => html += `<li>${escapeHTML(ex)}</li>`);
-      html += `</ol></div>`;
-    }
-    if(ls.exercises && ls.exercises.trim()){
-      html += `<div class="section"><strong>تمارين:</strong><ol>`;
-      ls.exercises.split(/\n/).filter(s=>s.trim()).forEach(q => html += `<li>${escapeHTML(q)}</li>`);
-      html += `</ol></div>`;
-    }
-    if(ls.solutions && ls.solutions.trim()){
-      html += `<div class="section"><strong>حلول قصيرة:</strong><div style="margin-top:6px">${nl2br(ls.solutions)}</div></div>`;
-    }
-    html += `</div>`;
-  });
-  // footer
-  html += `<div class="lessonPage" style="text-align:center;padding-top:40px;"><div class="small">مولّد مذكرات — ${new Date().getFullYear()}</div></div>`;
+  // cover (dark-ish)
+  html += `<div class="cover lessonPage" style="background:linear-gradient(180deg,#071021,#071a2a); color:white; border-radius:6px; padding:22mm 12px;">
+    <h2>مذكرة رياضيات</h2>
+    <div class="meta" style="margin-top:8px; font-size:16px; color:#cfeffd">${ls.level} — ${ls.title}</div>
+    <div class="meta" style="margin-top:12px; font-size:15px; color:#d6eef9">${school}</div>
+    <div style="margin-top:18px; color:#bfffcf; font-size:13px">${appName}</div>
+  </div>`;
+
+  // table of contents
+  html += `<div class="toc lessonPage"><h3 style="margin:0;color:#052033">فهرس المحتويات</h3><ol style="color:#052033;margin-top:8px;">
+    <li>مقدمة وأهداف</li>
+    <li>الشرح مع أمثلة</li>
+    <li>تمارين</li>
+    <li>حلول قصيرة</li>
+  </ol></div>`;
+
+  // lesson page
+  html += `<div class="lessonPage">
+    <div class="lessonHeader">
+      <div><h3 class="lessonTitle">${ls.title}</h3></div>
+      <div class="metaSmall">${ls.level}</div>
+    </div>
+
+    <div class="section">
+      <strong>الأهداف:</strong>
+      <ul style="margin:8px 0 0 18px;">
+        ${ls.objectives.map(o => `<li>${o}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="section">
+      <strong>الشرح:</strong>
+      <div style="margin-top:8px;">${ls.desc}</div>
+    </div>
+
+    <div class="section">
+      <strong>أمثلة محلولة:</strong>
+      ${ls.examples.map(ex => `<div class="exampleBox"><strong>مثال:</strong> ${ex.q} <div style="margin-top:6px;"><em>الحل:</em> ${ex.a}</div></div>`).join('')}
+    </div>
+
+    <div class="section">
+      <strong>تمارين:</strong>
+      <ol style="margin-top:8px;">
+        ${ls.exercises.map(e => `<li>${e}</li>`).join('')}
+      </ol>
+    </div>
+
+    <div class="section">
+      <strong>حلول قصيرة:</strong>
+      <ol style="margin-top:8px;">
+        ${ls.solutions.map(s => `<li>${s}</li>`).join('')}
+      </ol>
+    </div>
+
+    <div class="footer">المصدر: مذكرة رابعة متوسط (مقتطف مبسّط) — تم الإنشاء بواسطة ${appName}</div>
+  </div>`;
+
   return html;
 }
 
-function escapeHTML(s){ if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
-function nl2br(s){ if(!s) return ''; return s.replace(/\n/g,'<br/>'); }
+/* ======== عرض المعاينة ======== */
+function showPreview(){
+  const html = buildLessonBook('sqrt');
+  const preview = document.getElementById('preview');
+  preview.innerHTML = html;
+  // Render Math
+  if(window.MathJax) MathJax.typesetPromise();
+}
 
-// EVENTS
-levelSelect.addEventListener('change', ()=> {
-  populateLessonsFor(levelSelect.value);
-});
-document.getElementById('generateLesson').addEventListener('click', ()=> {
-  const lvl = levelSelect.value;
-  const lid = lessonSelect.value;
-  const arr = curriculum[lvl] || [];
-  const ls = arr.find(x => x.id === lid);
-  if(!ls){ alert('اختر درساً من القائمة'); return; }
-  const html = buildBookForLessons([ls], lvl);
-  bookDiv.innerHTML = html;
-  MathJax.typesetPromise();
-  // generate PDF immediately after small delay to allow MathJax render
-  setTimeout(()=> exportBookToPdf(html, `${ls.title}.pdf`), 900);
-});
-document.getElementById('generateLevel').addEventListener('click', ()=> {
-  const lvl = levelSelect.value;
-  const arr = curriculum[lvl] || [];
-  if(arr.length===0){ alert('لا توجد دروس لهذا المستوى'); return; }
-  const html = buildBookForLessons(arr, lvl);
-  bookDiv.innerHTML = html;
-  MathJax.typesetPromise();
-  setTimeout(()=> exportBookToPdf(html, `${lvl} - مذكرات.pdf`), 1200);
-});
-document.getElementById('generateAll').addEventListener('click', ()=> {
-  // combine all levels sequentially
-  const levels = Object.keys(curriculum);
-  let big = '';
-  levels.forEach(lv => {
-    const arr = curriculum[lv] || [];
-    big += buildBookForLessons(arr, lv);
-  });
-  bookDiv.innerHTML = big;
-  MathJax.typesetPromise();
-  setTimeout(()=> exportBookToPdf(big, `مذكرات_الرياضيات_المتوسط.pdf`), 1600);
-});
-
-// Export using html2pdf
-function exportBookToPdf(htmlContent, filename){
-  // create a hidden container to feed html2pdf (avoid UI elements)
+/* ======== تصدير PDF ======== */
+function exportPdf(){
+  const html = buildLessonBook('sqrt');
+  // create container
   const container = document.createElement('div');
-  container.style.background = 'white';
-  container.innerHTML = htmlContent;
-  // ensure element is in DOM for images/fonts to load
+  container.style.background = '#ffffff';
+  container.style.padding = '0';
+  container.innerHTML = html;
   document.body.appendChild(container);
+
   const opt = {
-    margin:       [12,10,12,10],
-    filename:     filename,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale:2, useCORS:true },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    margin: [12,10,12,10],
+    filename: `مذكرة_${lessons['sqrt'].id}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
-  html2pdf().set(opt).from(container).save().then(()=> {
-    // cleanup
-    document.body.removeChild(container);
-  }).catch(err=>{
-    alert('حدث خطأ أثناء توليد الـPDF: '+err.message);
-    document.body.removeChild(container);
+
+  // render MathJax first then export
+  MathJax.typesetPromise().then(()=> {
+    html2pdf().set(opt).from(container).save().then(()=> {
+      document.body.removeChild(container);
+    }).catch(err=>{
+      alert('خطأ أثناء توليد الـPDF: ' + err.message);
+      document.body.removeChild(container);
+    });
   });
 }
 
-/* INIT */
-populateLevels();
-populateLessonsFor(Object.keys(curriculum)[0]);
+/* ======== handlers ======== */
+document.getElementById('previewBtn').addEventListener('click', showPreview);
+document.getElementById('gen').addEventListener('click', ()=> {
+  // preview first then export
+  showPreview();
+  // small delay to allow MathJax render in preview
+  setTimeout(()=> exportPdf(), 900);
+});
 
+/* show initial preview */
+showPreview();
 </script>
 
 </body>
