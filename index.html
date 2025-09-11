@@ -1,269 +1,113 @@
 <!doctype html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>AI Prof Dali Nadjib — مولد المذكرة</title>
-
-  <!-- Dependencies -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-  <script id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
+  <title>AI Prof Dali Nadjib — مولد مذكرة</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
   <style>
-    :root{
-      --bg:#0b0f14;
-      --panel:#0f1720;
-      --accent:#00d1ff; /* neon cyan */
-      --accent2:#9cff5f; /* neon green */
-      --accent3:#ff9f43; /* orange */
-      --muted:#94a3b8;
-      --paper:#0b0f14;
-      --soft:#0b1220;
-    }
-    *{box-sizing:border-box}
-    body{ margin:0; font-family: "Noto Naskh Arabic", "Segoe UI", Tahoma, Arial; direction:rtl; background:linear-gradient(180deg,#05060a,#0b0f14 40%); color:#e6eef6; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-    .app{ max-width:1200px; margin:18px auto; display:grid; grid-template-columns:360px 1fr; gap:18px; padding:12px; }
-    .card{ background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:16px; box-shadow:0 8px 30px rgba(2,6,23,0.6); }
-    .header{ display:flex; align-items:center; gap:12px; }
-    .logo{ width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#031018; font-weight:700; font-size:14px; }
-    h1{ margin:0; font-size:18px; color:var(--accent); }
-    .subtitle{ color:var(--muted); margin-top:6px; font-size:13px; }
-
-    label{ display:block; margin:12px 0 6px; color:var(--muted); font-weight:700; font-size:13px;}
-    input[type=text], select{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.01); color:#eaf6ff; outline:none; font-size:14px;}
-    .controls{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
-    .btn{ cursor:pointer; padding:10px 14px; border-radius:10px; border:none; font-weight:700; }
-    .btn-main{ background: linear-gradient(90deg,var(--accent),var(--accent2)); color:#031018; box-shadow:0 6px 18px rgba(0,209,255,0.08); }
-    .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--muted); }
-    .small{ color:var(--muted); font-size:13px; margin-top:10px; }
-
-    /* right area - preview */
-    .previewWrap{ padding:12px; overflow:auto; min-height:640px; }
-    #preview{ width:210mm; margin:12px auto; background: #f7f9fb; color:#061026; padding:18mm; border-radius:6px; box-shadow:0 12px 36px rgba(2,6,23,0.6); }
-    .cover{ text-align:center; background:linear-gradient(180deg,#071021,#071a2a); color:white; padding:22mm 12px; border-radius:6px; }
-    .cover h2{ margin:0; font-size:28px; letter-spacing:1px; color:var(--accent); }
-    .cover .meta{ margin-top:12px; color: #dceff7; font-size:15px; }
-    .appname{ margin-top:18px; color:var(--accent2); font-weight:800; font-size:13px; padding:6px 10px; border-radius:999px; display:inline-block; background:rgba(156,255,95,0.08); }
-
-    .toc{ margin:18px 0; }
-    .lessonPage{ page-break-after: always; margin-bottom:6mm; }
-    .lessonHeader{ display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e6f9ff; padding-bottom:8px; margin-bottom:12px; }
-    .lessonTitle{ font-size:20px; color:#052033; margin:0; }
-    .metaSmall{ color:#36546a; font-size:13px; }
-    .section{ border-left:6px solid var(--accent); background:#fbfeff; padding:12px; margin-bottom:12px; border-radius:6px; color:#052033;}
-    .section strong{ color:#052033; }
-    .ol{ margin:8px 0 0 18px; color:#052033; }
-    .exampleBox{ background:linear-gradient(90deg,#f0fcff,#ffffff); padding:10px; border-radius:6px; border:1px solid #e2f6fb; color:#052033; margin-top:8px;}
-    .footer{ text-align:center; color:#274a5e; font-size:12px; margin-top:26px; }
-
-    /* mobile tweaks */
-    @media (max-width:980px){
-      .app{ grid-template-columns:1fr; padding:8px; }
-      .previewWrap{ order:2; }
-      #preview{ width:100%; padding:12mm; }
-    }
+    body{background:#0b0f14;color:#e6eef6;font-family:'Noto Naskh Arabic',Arial;padding:20px;}
+    .btn{background:linear-gradient(90deg,#00d1ff,#9cff5f);color:#031018;font-weight:700;padding:12px 20px;border-radius:10px;border:none;cursor:pointer;}
+    h1{color:#00d1ff;}
   </style>
 </head>
 <body>
-
-  <div class="app">
-    <!-- LEFT CONTROLS -->
-    <div class="card">
-      <div class="header">
-        <div class="logo">AI<br/>PROF</div>
-        <div>
-          <h1>AI Prof Dali Nadjib</h1>
-          <div class="subtitle">مولد مذكرات — اضغط زر واحصل على مذكرة جاهزة</div>
-        </div>
-      </div>
-
-      <label>اسم الأستاذ (يظهر داخل المذكرة)</label>
-      <input id="teacher" type="text" value="الأستاذ: د. اسمك هنا" />
-
-      <label>اسم المؤسسة / المتوسطة</label>
-      <input id="school" type="text" value="متوسطة النجاح — السنة الدراسية 2025" />
-
-      <label>اختر الدرس</label>
-      <select id="lesson" style="width:100%; padding:10px; border-radius:10px; background:rgba(255,255,255,0.01); color:#eaf6ff; border:1px solid rgba(255,255,255,0.04);">
-        <option value="sqrt">الجذر التربيعي لعدد موجب</option>
-      </select>
-
-      <div class="controls">
-        <button id="gen" class="btn btn-main">توليد مذكرة (PDF)</button>
-        <button id="previewBtn" class="btn btn-ghost">عرض معاينة</button>
-      </div>
-
-      <div class="small">خلفية التطبيق سوداء مع ألوان نيون. يمكنك تعديل اسم الأستاذ أو المتوسطة قبل التوليد.</div>
-    </div>
-
-    <!-- RIGHT PREVIEW -->
-    <div class="card previewWrap">
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
-        <div style="display:flex; gap:12px; align-items:center;">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2L20 7v10l-8 5-8-5V7l8-5z" stroke="#00d1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div style="font-weight:800; color:var(--accent)">معاينة المذكرة</div>
-        </div>
-        <div class="appname">AI Prof Dali Nadjib</div>
-      </div>
-
-      <div id="preview" aria-hidden="true">
-        <!-- سيملأ سكربت الـJS محتوى المذكرة هنا -->
-      </div>
-    </div>
-  </div>
+  <h1>AI Prof Dali Nadjib</h1>
+  <p>مولد مذكرات رياضيات — نموذج درس "الجذر التربيعي لعدد موجب"</p>
+  <button class="btn" onclick="generate()">توليد مذكرة PDF</button>
 
 <script>
-/* ======== محتوى الدرس الحقيقي (مبسّط من المذكرة) ======== */
-const lessons = {
-  "sqrt": {
-    id: "4-1",
-    title: "الجذر التربيعي لعدد موجب",
-    level: "4 متوسط",
-    desc: `تعريف الجذر التربيعي للعدد الموجب وخواصه الأساسية.
-إذا كان \\(a\\ge0\\) فـ \\(\\sqrt a\\) هو العدد الموجب \\(x\\) بحيث \\(x^2=a\\).
-خواص مهمة: \\(\\sqrt{ab}=\\sqrt a\\sqrt b\\) و \\(\\sqrt{\\dfrac a b}=\\dfrac{\\sqrt a}{\\sqrt b}\\) (لـ b>0).`,
-    objectives: [
-      "تعريف الجذر التربيعي لعدد موجب",
-      "تبسيط الجذور واستخراج العوامل المربعة",
-      "حل تمارين تطبيقية تتطلب تبسيط أو حساب جذور"
+function generate(){
+  const docDefinition = {
+    content: [
+      {
+        text: 'الجمهورية الجزائرية الديمقراطية الشعبية',
+        alignment: 'center',
+        style: 'small'
+      },
+      {
+        text: 'مذكرة في مادة الرياضيات',
+        style: 'coverTitle',
+        alignment: 'center',
+        margin:[0,10,0,20]
+      },
+      {
+        text: 'المستوى: السنة الرابعة متوسط',
+        alignment: 'center',
+        style:'coverSub'
+      },
+      {
+        text: 'عنوان الدرس: الجذر التربيعي لعدد موجب',
+        alignment: 'center',
+        style:'coverSub',
+        margin:[0,10,0,40]
+      },
+      {
+        table:{
+          widths: ['20%','20%','20%','30%','10%'],
+          body:[
+            [
+              {text:'الوضعية التعليمية',style:'th'},
+              {text:'الأهداف التعلمية',style:'th'},
+              {text:'الوسائل',style:'th'},
+              {text:'الأنشطة',style:'th'},
+              {text:'ملاحظات',style:'th'}
+            ],
+            [
+              'مقدمة: مراجعة الأعداد الطبيعية والجذور',
+              [
+                '• تعريف الجذر التربيعي لعدد موجب',
+                '• تبسيط الجذور',
+                '• استعمال الخواص في مسائل'
+              ].join('\n'),
+              'سبورة + كتاب مدرسي',
+              [
+                'شرح تعريف: إذا كان a ≥ 0 فإن √a هو العدد الموجب x بحيث x²=a.',
+                'خواص: √(ab)=√a√b ، √(a/b)=√a/√b.',
+                'أمثلة: √72=6√2 ، √98=7√2.'
+              ].join('\n\n'),
+              ''
+            ],
+            [
+              'وضعيات تعلمية',
+              'ترسيخ القاعدة',
+              'تمارين تطبيقية',
+              [
+                '1. احسب: √49 و √0.25',
+                '2. بسط: √98',
+                '3. أوجد: √(81/16)'
+              ].join('\n'),
+              ''
+            ],
+            [
+              'التقويم والدعم',
+              'التأكد من الفهم',
+              '',
+              [
+                'حلول قصيرة:',
+                '√49=7 ، √0.25=0.5',
+                '√98=7√2',
+                '√(81/16)=9/4'
+              ].join('\n'),
+              ''
+            ]
+          ]
+        },
+        layout:'lightHorizontalLines'
+      },
+      {text:'\nالمصدر: مذكرة رابعة متوسط — تم الإنشاء بواسطة AI Prof Dali Nadjib',style:'footer',alignment:'center'}
     ],
-    examples: [
-      { q: "\\sqrt{72}", a: "\\sqrt{72}=\\sqrt{36\\cdot2}=6\\sqrt2" },
-      { q: "\\sqrt{98}", a: "\\sqrt{98}=\\sqrt{49\\cdot2}=7\\sqrt2" }
-    ],
-    exercises: [
-      "احسب: \\(\\sqrt{49}\\) و \\(\\sqrt{0.25}\\).",
-      "بسط: \\(\\sqrt{98}\\).",
-      "أوجد: \\(\\sqrt{\\dfrac{81}{16}}\\)."
-    ],
-    solutions: [
-      "\\(\\sqrt{49}=7\\), \\(\\sqrt{0.25}=0.5\\).",
-      "\\(\\sqrt{98}=7\\sqrt2\\).",
-      "\\(\\sqrt{\\dfrac{81}{16}}=\\dfrac{9}{4}\\)."
-    ],
-    source: "مذكرة رابعة متوسط (المرفق)"
-  }
-};
-
-/* ======== بناء HTML للمذكرة (مطابق للشكل المطلوب) ======== */
-function buildLessonBook(lessonKey){
-  const ls = lessons[lessonKey];
-  const teacher = document.getElementById('teacher').value || '';
-  const school = document.getElementById('school').value || '';
-  const appName = "AI Prof Dali Nadjib";
-
-  let html = '';
-  // cover (dark-ish)
-  html += `<div class="cover lessonPage" style="background:linear-gradient(180deg,#071021,#071a2a); color:white; border-radius:6px; padding:22mm 12px;">
-    <h2>مذكرة رياضيات</h2>
-    <div class="meta" style="margin-top:8px; font-size:16px; color:#cfeffd">${ls.level} — ${ls.title}</div>
-    <div class="meta" style="margin-top:12px; font-size:15px; color:#d6eef9">${school}</div>
-    <div style="margin-top:18px; color:#bfffcf; font-size:13px">${appName}</div>
-  </div>`;
-
-  // table of contents
-  html += `<div class="toc lessonPage"><h3 style="margin:0;color:#052033">فهرس المحتويات</h3><ol style="color:#052033;margin-top:8px;">
-    <li>مقدمة وأهداف</li>
-    <li>الشرح مع أمثلة</li>
-    <li>تمارين</li>
-    <li>حلول قصيرة</li>
-  </ol></div>`;
-
-  // lesson page
-  html += `<div class="lessonPage">
-    <div class="lessonHeader">
-      <div><h3 class="lessonTitle">${ls.title}</h3></div>
-      <div class="metaSmall">${ls.level}</div>
-    </div>
-
-    <div class="section">
-      <strong>الأهداف:</strong>
-      <ul style="margin:8px 0 0 18px;">
-        ${ls.objectives.map(o => `<li>${o}</li>`).join('')}
-      </ul>
-    </div>
-
-    <div class="section">
-      <strong>الشرح:</strong>
-      <div style="margin-top:8px;">${ls.desc}</div>
-    </div>
-
-    <div class="section">
-      <strong>أمثلة محلولة:</strong>
-      ${ls.examples.map(ex => `<div class="exampleBox"><strong>مثال:</strong> ${ex.q} <div style="margin-top:6px;"><em>الحل:</em> ${ex.a}</div></div>`).join('')}
-    </div>
-
-    <div class="section">
-      <strong>تمارين:</strong>
-      <ol style="margin-top:8px;">
-        ${ls.exercises.map(e => `<li>${e}</li>`).join('')}
-      </ol>
-    </div>
-
-    <div class="section">
-      <strong>حلول قصيرة:</strong>
-      <ol style="margin-top:8px;">
-        ${ls.solutions.map(s => `<li>${s}</li>`).join('')}
-      </ol>
-    </div>
-
-    <div class="footer">المصدر: مذكرة رابعة متوسط (مقتطف مبسّط) — تم الإنشاء بواسطة ${appName}</div>
-  </div>`;
-
-  return html;
-}
-
-/* ======== عرض المعاينة ======== */
-function showPreview(){
-  const html = buildLessonBook('sqrt');
-  const preview = document.getElementById('preview');
-  preview.innerHTML = html;
-  // Render Math
-  if(window.MathJax) MathJax.typesetPromise();
-}
-
-/* ======== تصدير PDF ======== */
-function exportPdf(){
-  const html = buildLessonBook('sqrt');
-  // create container
-  const container = document.createElement('div');
-  container.style.background = '#ffffff';
-  container.style.padding = '0';
-  container.innerHTML = html;
-  document.body.appendChild(container);
-
-  const opt = {
-    margin: [12,10,12,10],
-    filename: `مذكرة_${lessons['sqrt'].id}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    styles:{
+      coverTitle:{fontSize:22,bold:true,color:'#00d1ff'},
+      coverSub:{fontSize:14,color:'#9cff5f'},
+      th:{bold:true,fillColor:'#e0f7ff',color:'#031018',alignment:'center'},
+      footer:{fontSize:10,italics:true,color:'#888'},
+      small:{fontSize:10,color:'#aaa'}
+    },
+    defaultStyle:{font:'Helvetica',fontSize:12}
   };
-
-  // render MathJax first then export
-  MathJax.typesetPromise().then(()=> {
-    html2pdf().set(opt).from(container).save().then(()=> {
-      document.body.removeChild(container);
-    }).catch(err=>{
-      alert('خطأ أثناء توليد الـPDF: ' + err.message);
-      document.body.removeChild(container);
-    });
-  });
+  pdfMake.createPdf(docDefinition).download("مذكرة_الجذر_التربيعي.pdf");
 }
-
-/* ======== handlers ======== */
-document.getElementById('previewBtn').addEventListener('click', showPreview);
-document.getElementById('gen').addEventListener('click', ()=> {
-  // preview first then export
-  showPreview();
-  // small delay to allow MathJax render in preview
-  setTimeout(()=> exportPdf(), 900);
-});
-
-/* show initial preview */
-showPreview();
 </script>
-
 </body>
 </html>
