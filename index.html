@@ -3,102 +3,68 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>مولّد مذكرات (منهاج متوسّط كامل) — ملف واحد</title>
+  <title>مولّد مذكرات — اضغط زر واصدر مذكرة باسمك</title>
 
-  <!-- html2pdf -->
+  <!-- Dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-  <!-- MathJax -->
   <script id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
   </script>
 
   <style>
-    :root{
-      --accent:#0b66a0;
-      --paper:#fff;
-      --bg:#f4f7fa;
-      --muted:#666;
-    }
+    :root{ --accent:#0b66a0; --muted:#65707a; --bg:#f5f8fb; --paper:#fff; }
     body{ font-family: "Segoe UI", Tahoma, "Noto Naskh Arabic", Arial; direction: rtl; background:var(--bg); margin:0; padding:18px; color:#111; }
-    .topbar{ display:flex; gap:12px; align-items:center; margin-bottom:12px; }
-    h1{ margin:0; font-size:20px; color:var(--accent); }
-    .wrap{ display:flex; gap:16px; max-width:1200px; margin:0 auto; }
-    .panel{ background:var(--paper); border-radius:10px; padding:12px; box-shadow:0 2px 14px rgba(15,30,45,0.06); }
-    .left{ width:420px; flex:0 0 420px; }
-    .right{ flex:1; min-width:360px; max-height:78vh; overflow:auto; }
-    label{ display:block; margin:8px 0 4px; font-weight:700; }
-    input[type=text], textarea, select { width:100%; padding:8px; border:1px solid #d5dfe8; border-radius:6px; box-sizing:border-box; font-size:14px; }
-    textarea{ min-height:80px; }
-    .btn{ display:inline-block; background:var(--accent); color:#fff; padding:10px 12px; border-radius:8px; border:none; cursor:pointer; margin-top:8px; }
-    .btn-ghost{ background:transparent; border:1px solid #d5dfe8; color:#222; }
-    .btn-danger{ background:#c33; }
-    .small{ font-size:13px; color:var(--muted); }
-    .lessons-list{ margin-top:8px; max-height:50vh; overflow:auto; padding:6px; border-radius:6px; border:1px solid #eef4f8; }
-    .lesson-item{ padding:8px; border-bottom:1px dashed #e6eef4; }
-    .meta{ font-size:13px; color:var(--muted); margin-top:6px; }
-
-    /* Book / PDF styles */
-    #book{ width:210mm; min-height:297mm; margin:0 auto; background:var(--paper); padding:18mm; box-shadow:0 6px 18px rgba(0,0,0,0.12); color:#111; }
-    .cover{ text-align:center; padding-top:20mm; padding-bottom:12mm; }
-    .cover h2{ font-size:36px; margin:0; color:var(--accent); letter-spacing:1px; }
-    .cover .author{ margin-top:20px; font-size:18px; }
+    .app{ max-width:1100px; margin:0 auto; display:flex; gap:18px; }
+    .panel{ background:var(--paper); padding:14px; border-radius:10px; box-shadow:0 6px 18px rgba(15,30,45,0.06); }
+    .left{ width:380px; flex:0 0 380px; }
+    .right{ flex:1; }
+    h1{ margin:0 0 8px 0; color:var(--accent); font-size:20px; }
+    label{ display:block; margin:10px 0 6px; font-weight:700; }
+    input[type=text], select { width:100%; padding:8px; border:1px solid #e1e9f2; border-radius:8px; box-sizing:border-box; }
+    .btn{ display:inline-block; background:var(--accent); color:#fff; padding:10px 12px; border-radius:8px; border:none; cursor:pointer; margin-top:10px; }
+    .btn-ghost{ background:transparent; border:1px solid #e1e9f2; color:#222; }
+    .small{ font-size:13px; color:var(--muted); margin-top:8px; }
+    #book{ background:var(--paper); padding:18mm; color:#111; box-shadow:0 6px 18px rgba(0,0,0,0.12); min-height:297mm; width:210mm; margin:10px auto; }
+    .cover{ text-align:center; padding-top:22mm; padding-bottom:12mm; }
+    .cover h2{ font-size:34px; color:var(--accent); margin:0; }
     .toc{ margin-top:12mm; margin-bottom:12mm; }
     .lessonPage{ page-break-after: always; margin-bottom:6mm; }
     .lessonHeader{ display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--accent); padding-bottom:6px; margin-bottom:10px; }
-    .section{ border-left:6px solid var(--accent); background:#fbfeff; padding:10px; margin-bottom:8px; }
-    .content-img{ max-width:100%; height:auto; border:1px solid #ddd; margin-top:8px; }
-    .footer-note{ text-align:center; margin-top:20px; color:var(--muted); font-size:12px; }
-
-    /* responsive */
-    @media (max-width: 980px){
-      .wrap{ flex-direction:column; }
-      .left{ width:100%; flex:auto; }
+    .section{ border-left:6px solid var(--accent); background:#fbfeff; padding:10px; margin-bottom:8px; border-radius:4px; }
+    img.content-img{ max-width:100%; height:auto; border:1px solid #ddd; margin-top:8px; }
+    .controls-row{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+    @media (max-width:900px){
+      .app{ flex-direction:column; }
+      .left{ width:auto; }
       #book{ width:100%; padding:12px; box-shadow:none; }
     }
   </style>
 </head>
 <body>
 
-  <div class="topbar">
-    <h1>مولّد مذكرات مشابه للمذكرة المرسلة — ملف واحد (جميع المستويات)</h1>
-    <div class="small">انسخ الملف وارفعه إلى GitHub ثم إلى Vercel لتشغيله مباشرة.</div>
-  </div>
-
-  <div class="wrap">
+  <div class="app">
     <div class="panel left">
-      <label>اسم المؤلف / الأستاذ</label>
-      <input id="teacher" value="الأستاذ: د. اسمك هنا" />
+      <h1>مولّد المذكرة — سهل للأستاذ</h1>
 
-      <label style="margin-top:8px;">المؤسسة / السنة</label>
-      <input id="school" value="متوسطة — السنة الدراسية 2025" />
+      <label>اسم الأستاذ (سيظهر على الغلاف)</label>
+      <input id="teacher" type="text" placeholder="مثلاً: الأستاذ: د. محمد علي" value="الأستاذ: د. اسمك هنا" />
 
-      <label style="margin-top:8px;">اختر المستوى</label>
-      <select id="levelSelect">
-        <option value="1 متوسط">1 متوسط</option>
-        <option value="2 متوسط">2 متوسط</option>
-        <option value="3 متوسط">3 متوسط</option>
-        <option value="4 متوسط">4 متوسط</option>
-      </select>
+      <label>اسم المؤسسة / المتوسطة</label>
+      <input id="school" type="text" placeholder="مثلاً: متوسطة النجاح — 2025" value="متوسطة — 2025" />
 
-      <div style="display:flex; gap:8px; margin-top:10px;">
-        <button id="fillLevel" class="btn">املأ دروس هذا المستوى</button>
-        <button id="fillAll" class="btn btn-ghost">املأ جميع المستويات</button>
+      <label>اختر المستوى</label>
+      <select id="levelSelect"></select>
+
+      <label>اختر الدرس</label>
+      <select id="lessonSelect" size="8" style="height:220px;"></select>
+
+      <div class="controls-row">
+        <button id="generateLesson" class="btn">توليد مذكرة هذا الدرس</button>
+        <button id="generateLevel" class="btn">توليد جميع دروس هذا المستوى</button>
+        <button id="generateAll" class="btn btn-ghost">توليد كامل المستويات</button>
       </div>
 
-      <div style="display:flex; gap:8px; margin-top:8px;">
-        <button id="clear" class="btn btn-danger">مسح الدروس</button>
-        <button id="addManual" class="btn btn-ghost">أضف درس يدوي</button>
-      </div>
-
-      <div class="meta">بعد الإضافة، يمكنك تعديل أي درس من القائمة يميناً قبل التوليد.</div>
-
-      <div class="lessons-list" id="lessonsContainer"></div>
-
-      <div style="margin-top:10px;">
-        <button id="previewBtn" class="btn">عرض المعاينة</button>
-        <button id="pdfBtn" class="btn">تنزيل المذكرة كـ PDF</button>
-      </div>
-      <div class="small" style="margin-top:10px;">ملاحظة: التصميم يحاول محاكاة المذكرة الأصلية. يمكنك تعديل النصوص أو ترتيب الدروس قبل التنزيل.</div>
+      <div class="small">يمكنك تعديل نص أي درس لاحقاً داخل مربع التحرير إن رغبت — لكن الهدف: بضغطة زر تنتج مذكرة جاهزة باسمك.</div>
     </div>
 
     <div class="panel right">
@@ -108,200 +74,168 @@
 
 <script>
 /* ===========================
-   قاعدة البيانات — دروس لجميع المستويات (نسخة شاملة نموذجية)
-   يمكنك تعديل/إضافة الدروس هنا بسهولة.
-   كل درس: title, desc, examples, exercises, solutions
+   قاعدة الدروس (معبأة مبدئياً)
+   هذه القاعدة قابلة للتعديل داخل الملف لاحقًا.
+   ضع هنا عناوين الدروس كما في المنهاج الرسمي إن رغبت.
    =========================== */
 
 const curriculum = {
   "1 متوسط": [
-    { title: "الأعداد الصحيحة: مراجعة وتمارين", desc: "أرقام صحيحة موجبة وسالبة، ترتيب، جمع وطرح وقوانين الإشارة.", examples: "مثال: احسب \\(-3+7\\)\nمثال: جمع -5 و -2.", exercises: "1) احسب: -8 + 12\n2) رتب الأعداد: -3, 5, 0, -1", solutions: "حل 1: 4\nحل 2: -3, -1, 0, 5" },
-    { title: "الكسور الاعتيادية والمكافئة", desc: "تعريف الكسر، المكافئات، تبسيط، مقارنة كسور.", examples: "مثال: اختصر \\(\\frac{12}{16}\\)\nمثال: أوجد مكافئ \\(\\frac{2}{3}\\).", exercises: "1) اختصر: \\(\\frac{18}{24}\\)\n2) أيهما أكبر: \\(\\frac{3}{5}\\) أم \\(\\frac{2}{3}\\)؟", solutions: "حل1: \\(\\frac{3}{4}\\)\nحل2: \\(\\frac{2}{3}\\) أكبر" },
-    { title: "الأعداد العشرية وتحويلاتها", desc: "قراءة الأعداد العشرية، تحويل الكسور لعشري والعكس.", examples: "مثال: \\(\\frac{3}{8}=0.375\\)\nمثال: 0.25 = \\(\\frac{1}{4}\\).", exercises: "1) حوّل 0.6 إلى كسر\n2) اكتب \\(\\frac{7}{10}\\) كعدد عشري", solutions: "حل1: \\(\\frac{3}{5}\\)\nحل2: 0.7" },
-    { title: "القياس: وحدات الطول والكتلة والسعة", desc: "تحويل الوحدات: مم، سم، م، كم؛ غرام وكيلوغرام.", examples: "مثال: 2500 م = 2.5 كم\nمثال: 1500 غ = 1.5 كغ.", exercises: "1) حوّل 3500 م إلى كم\n2) حوّل 4500 غ إلى كغ", solutions: "حل1: 3.5 كم\nحل2: 4.5 كغ" },
-    { title: "الهندسة المستوية: النقطة والمستقيم والقطعة", desc: "تعريفات أساسية: نقطة، مستقيم، قطعة مستقيمة، شعاع.", examples: "مثال: بين هل A و B نقطة أم مستقيم؟\nنشاط: رسم قطع.", exercises: "1) عرف المستقيم والقطعة \n2) ارسم قطعة طولها 5 سم", solutions: "تعريفات كما في السؤال" },
-    { title: "الزوايا وأنواعها", desc: "زاوية حادة، قائمة، منفرجة، تكوينية، متكاملة.", examples: "مثال: ما نوع الزاوية 90°؟\nمثال: إذا A=40°, فالمتكاملة لها = 140°.", exercises: "1) اذكر نوع الزاوية: 120°\n2) إذا كانت زاوية A=30°, ما زاويتها المتكاملة؟", solutions: "حل1: منفرجة\nحل2: 150°" },
-    { title: "القياسات الزمنية والحساب عليها", desc: "تحويل الساعات والدقائق، جمع وطرح الزمن.", examples: "مثال: 1س30د + 45د = 2س15د", exercises: "1) 2س15د - 45د\n2) حوّل 150 دقيقة إلى ساعات ودقائق", solutions: "حل1: 1س30د\nحل2: 2س30د" },
-    { title: "النسبة والتناسب المبسّط", desc: "تعريف النسبة، حل مسائل التناسب البسيطة.", examples: "مثال: 2:3 = x:15 → x=10", exercises: "1) \\(\\frac{2}{5}=\\frac{x}{20}\\)\n2) إذا 3 أجزاء = 12 طالبًا، فكم طالبًا لجزء واحد؟", solutions: "حل1: x=8\nحل2: 4 طلاب" },
-    { title: "المستطيل والمربع: المساحة والمحيط", desc: "قوانين المساحة والمحيط للمستطيل والمربع.", examples: "مثال: مستطيل 5×3 → مساحة 15", exercises: "1) احسب محيط مربع طول ضلعه 4\n2) مساحة مستطيل 6×2", solutions: "حل1: 16\nحل2: 12" },
-    { title: "التمثيل البياني البسيط", desc: "تمثيل بيانات بسيطة في محور وتفسيرها.", examples: "مثال: رسم عدد التفاحات كل يوم", exercises: "1) ارسم النقاط (1,2),(2,3)\n2) مثل جدول درجات", solutions: "حلول توضيحية" }
+    { id:"1-1", title:"الأعداد الطبيعية والعمليات الأساسية", desc:"مراجعة الأعداد الطبيعية، جمع وطرح وضرب وقسمة، ترتيب الأعداد.", examples:"مثال: 12+8=20\nمثال: 5×6=30", exercises:"1) احسب: 15-7\n2) احسب: 6×7", solutions:"حل1: 8\nحل2:42" },
+    { id:"1-2", title:"الأعداد العشرية والكسور البسيطة", desc:"الكتابة العشرية، تحويل الكسر إلى عدد عشري والعكس.", examples:"مثال: \\(\\frac{3}{4}=0.75\\)\nمثال: 0.2=\\(\\frac{1}{5}\\)", exercises:"1) حول 0.6 إلى كسر\n2) اختصر \\(\\frac{6}{9}\\)", solutions:"حل1: \\(\\frac{3}{5}\\)\nحل2: \\(\\frac{2}{3}\\)" },
+    { id:"1-3", title:"المجموعات البسيطة والتناظر المحوري", desc:"تعريف المجموعة والتناظر المحوري.", examples:"نشاط: انعكس شكل عبر محور.", exercises:"1) ارسم تناظر محوري لشكل بسيط", solutions:"حل: إظهار الرسم" },
+    { id:"1-4", title:"الهندسة البسيطة: النقطة والمستقيم والقطعة", desc:"تعريفات أساسية وطرق القياس.", examples:"مثال: رسم قطعة طولها 5 سم", exercises:"1) ارسم مستقيمًا وقطعًا", solutions:"تعريفات" }
   ],
 
   "2 متوسط": [
-    { title: "المعادلات الخطية من الدرجة الأولى", desc: "حل المعادلات المبسطة \\(ax+b=0\\).", examples: "مثال: حل \\(2x+3=11\\).", exercises: "1) حل: \\(3x+4=13\\)\n2) حل: \\(5x-10=0\\)", solutions: "حل1: x=3\nحل2: x=2" },
-    { title: "المعادلات ذات المطلوب في طرفين", desc: "نقل الحدود وحل المعادلات مع جمع/طرح.", examples: "مثال: \\(2x+3=4x-5\\).", exercises: "1) حل \\(4x-2=2x+6\\)\n2) حل \\(7-3x=1\\)", solutions: "حل1: x=4\nحل2: x=2" },
-    { title: "الهندسة: المستقيمات والزوايا", desc: "زاويتان متكاملتان، متجاورتان، متبادلة داخلية.", examples: "مثال: قياس الزاويتين إذا كانت متكاملتين.", exercises: "1) إذا A=55°, ما متكملتها؟", solutions: "حل: 125°" },
-    { title: "المثلثات: أنواع وخصائص", desc: "مثلث متساوي الأضلاع، متساوي الساقين، قائم الزاوية.", examples: "مثال: مثلث أضلاعه متساوية.", exercises: "1) برهن أن مثلثًا قائمًا إذا كانت أطواله 3،4،5.", solutions: "حل: تطبيق فيثاغورس" },
-    { title: "النسب والتناسب المتقدّم", desc: "تطبيقات في حل المسائل اليومية والتدرجات.", examples: "مثال: الطول والخرائط.", exercises: "1) حل النسبة: \\(\\frac{2}{3}=\\frac{x}{15}\\)", solutions: "حل: x=10" },
-    { title: "الكسور والعمليات عليها المتقدمة", desc: "جمع وطرح وضرب وقسمة الكسور المعقدة.", examples: "مثال: \\(\\frac{2}{3} + \\frac{3}{4}\\).", exercises: "1) اجمع \\(\\frac{5}{6}+\\frac{1}{3}\\)", solutions: "حل: \\(\\frac{7}{6}\\)" },
-    { title: "النسبة المئوية وتطبيقاتها", desc: "حساب النسبة المئوية، الزيادة والنقصان", examples: "مثال: 20% من 150 = 30", exercises: "1) ما 15% من 200؟", solutions: "حل: 30" },
-    { title: "الإحداثيات: نقطة في مستوٍ", desc: "إحداثي نقطة على المستوي، بعد النقاط.", examples: "مثال: المسافة بين (0,0) و(3,4) =5", exercises: "1) احسب المسافة بين (1,2) و (4,6).", solutions: "حل: 5" },
-    { title: "حساب المساحة لمضلعات بسيطة", desc: "مساحة مثلث، شبه منحرف، المعادلات البسيطة.", examples: "مثال: مساحة مثلث = نصف القاعدة×الارتفاع", exercises: "1) احسب مساحة مثلث قاعدته 6 وارتفاعه 4", solutions: "حل: 12" },
-    { title: "التناسبية الطردية والعكسية", desc: "تمييز بين الأنواع وحل مسائل.", examples: "مثال: سرعة ثابتة ومسافة.", exercises: "1) إذا زادت السرعة 2 ضعف، كيف تتغير المدة؟", solutions: "حل: تنخفض إلى النصف" }
+    { id:"2-1", title:"المعادلات من الدرجة الأولى", desc:"حل المعادلات البسيطة \\(ax+b=0\\).", examples:"مثال: حل \\(2x+3=11\\).", exercises:"1) حل: \\(3x+4=13\\)\n2) حل: \\(5x-10=0\\)", solutions:"حل1: x=3\nحل2: x=2" },
+    { id:"2-2", title:"الكسور والعمليات عليها", desc:"جمع وطرح وضرب وقسمة الكسور.", examples:"مثال: \\(\\frac{2}{3}+\\frac{1}{6}\\).", exercises:"1) اجمع \\(\\frac{5}{6}+\\frac{1}{3}\\)", solutions:"حل: \\(\\frac{7}{6}\\)" },
+    { id:"2-3", title:"الهندسة: الزوايا والمستقيمات المتوازية", desc:"تعريف الزوايا وأنواعها، المستقيمات المتوازية.", examples:"مثال: إذا كانت زاوية 40° المتكاملة لها 140°.", exercises:"1) اذكر نوع الزاوية 120°", solutions:"حل: منفرجة" }
   ],
 
   "3 متوسط": [
-    { title: "المتتابعات الحسابية والهندسية (مقدّم)", desc: "تعريف المتتابعات وصيغ الحد العام.", examples: "مثال: متتابعة حسابية فرقها 3.", exercises: "1) جد الحد الخامس لمتتابعة تبدأ ب2 فرق 3", solutions: "حل: 14" },
-    { title: "الدوال الخطية وتمثيلها", desc: "معادلة المستقيم \\(y=mx+c\\)، ميل المستقيم.", examples: "مثال: ميل المستقيم المار بالنقطتين.", exercises: "1) جد ميل المستقيم المار ب (1,2) و (3,6).", solutions: "حل: m=2" },
-    { title: "المثلثات: تشابه ومطابقات", desc: "شروط تشابه المثلثات واستعمالاتها.", examples: "مثال: أوجد علاقة الطول بين مثلثين متشابهين.", exercises: "1) أوجد المجهول في مثلثين متشابهين", solutions: "حلول تطبيقية" },
-    { title: "نظرية فيثاغورس وتطبيقاتها", desc: "تطبيقات نظرية فيثاغورس في قياس الأضلاع.", examples: "مثال: في مثلث 3،4،5.", exercises: "1) إذا أحد الأضلاع 5 والآخر 12، ما الضلع الثالث؟", solutions: "حل: 13" },
-    { title: "المتطابقات المثلثية (مقدمة)", desc: "تعريفات جيب وجيب تمام للزوايا الخاصة.", examples: "مثال: \\(\\sin 30° = 1/2\\).", exercises: "1) احسب \\(\\sin 0°\\) و \\(\\cos 0°\\)", solutions: "حل: 0 و1" },
-    { title: "الإحصاء: التكرارات والمتوسط", desc: "الجداول التكرارية وحساب المتوسط الوسيط.", examples: "مثال: حساب المتوسط لعيّنة.", exercises: "1) احسب المتوسط للدرجات 5,6,7,8", solutions: "حل: 6.5" },
-    { title: "المعاملات الثنائية والاحتمال (أساسيات)", desc: "تعريف الاحتمال البسيط والتجارب.", examples: "مثال: رمي عملة.", exercises: "1) ما احتمال الحصول على وجه؟", solutions: "حل: 1/2" },
-    { title: "مسائل كلامية مركبة", desc: "تركيب مسائل تعتمد على النسبة والمعدل والزمن.", examples: "مثال: تقسيم الأموال حسب نسبة.", exercises: "1) إذا قسمنا 120 إلى نسب 2:3:5، ما حصة كل جزء؟", solutions: "حل: 24,36,60" },
-    { title: "الهندسة التحليلية: معادلات بسيطة", desc: "معادلات الخطوط والقطع البسيطة.", examples: "مثال: كتابة معادلة مستقيم.", exercises: "1) أوجد معادلة المستقيم الذي يمر ب (0,1) وميله 2.", solutions: "حل: y=2x+1" }
+    { id:"3-1", title:"المتتابعات (مقدمة)", desc:"التعرف على المتتابعات الحسابية والهندسية وصيغ الحد العام.", examples:"مثال: متتابعة حسابية فرقها 3: 2,5,8,...", exercises:"1) جد الحد الخامس لمتتابعة تبدأ ب2 فرق3", solutions:"حل: 14" },
+    { id:"3-2", title:"الدوال الخطية والتمثيل البياني", desc:"معادلة المستقيم \\(y=mx+c\\) وتمثيلها.", examples:"مثال: ميل المستقيم المار بنقطتين", exercises:"1) جد الميل بين (1,2) و (3,6)", solutions:"حل: 2" }
   ],
 
   "4 متوسط": [
-    { title: "الدوال: الخطية والتناسبية", desc: "دوال خطية وتناسبية، خواصها وتمثيلها.", examples: "مثال: دالة \\(f(x)=2x+1\\).", exercises: "1) ارسم \\(y=2x+1\\)\n2) جد قيمة f(3)", solutions: "حل2: f(3)=7" },
-    { title: "المعادلات من رتبة أعلى: حلول مقتضبة", desc: "مقدمة لمعادلات من رتب بسيطة ومعادلات تحتوي معامل.", examples: "مثال: حل معادلة تحتوي كسر.", exercises: "1) حل: \\(x^2-5x+6=0\\) (مقدمة)", solutions: "حل: x=2,3" },
-    { title: "الهندسة: المساحات المتقدمة", desc: "مساحات الدوائر، الإسدية، علاقة الأقطار.", examples: "مثال: مساحة دائرة نصف قطر r = \\(\\pi r^2\\).", exercises: "1) مساحة دائرة نصف قطر 3", solutions: "حل: 9π" },
-    { title: "الاحتمالات المركبة والإحصاء", desc: "المتوسط، الانحراف المعياري (مقدمة)، احتمال مشروط بسيط.", examples: "مثال: حساب احتمال حدث مركب.", exercises: "1) إذا سحبنا كرة من كيس، ما احتمال ...", solutions: "حلول مختصرة" },
-    { title: "المعادلات التفاضلية (مقدمة مبسطة)", desc: "فكرة عامة عن التغيرات ومعدلات النمو (مقدّم فقط).", examples: "مثال: معدل تغير المسافة بالنسبة للزمن.", exercises: "1) مسائل لفظية عن التغير.", solutions: "حلول وصفية" },
-    { title: "التطبيقات الرياضية في الحياة اليومية", desc: "مسائل سعر، تخفيضات، تطبيقات في الاقتصاد المنزلي.", examples: "مثال: حسَب خصم 20% على سعر.", exercises: "1) سعر سلعة 100 دج بعد خصم 15%؟", solutions: "حل: 85 دج" },
-    { title: "الهياكل الجبرية البسيطة (مقدمة)", desc: "مفهوم متغيرات ومعاملات وجمع وضرب مجرد.", examples: "مثال: جمع حدود متشابهة.", exercises: "1) بسط \\(2x+3x-5\\)", solutions: "حل: 5x-5" }
+    { id:"4-1", title:"الدوال والتناسبية", desc:"تعريف الدالة الخطية والتناسبية وتمثيلها.", examples:"مثال: \\(y=2x+1\\) تمثيلها.", exercises:"1) ارسم الدالة \\(y=2x+1\\)", solutions:"حل: تمثيل بياني" },
+    { id:"4-2", title:"الإحصاء والاحتمالات الأساسية", desc:"المتوسط، الوسيط، وحساب احتمال بسيط.", examples:"مثال: احتمال الحصول على وجه في رمية عملة = \\(\\frac{1}{2}\\).", exercises:"1) ما احتمال سحب كرة حمراء؟", solutions:"حل: يعتمد على عدد الكرات" }
   ]
 };
 
 /* ===========================
-   وظائف الواجهة
+   بداية وظائف الواجهة
    =========================== */
 
-const lessonsContainer = document.getElementById('lessonsContainer');
-const book = document.getElementById('book');
+const levelSelect = document.getElementById('levelSelect');
+const lessonSelect = document.getElementById('lessonSelect');
+const teacherInput = document.getElementById('teacher');
+const schoolInput = document.getElementById('school');
+const bookDiv = document.getElementById('book');
 
-function makeLessonElement(prefill = {}) {
-  const el = document.createElement('div');
-  el.className = 'lesson-item';
-  el.innerHTML = `
-    <div><strong>عنوان:</strong> <input class="li-title" type="text" value="${escape(prefill.title||'')}" style="width:100%; margin-top:6px"/></div>
-    <div style="margin-top:6px"><strong>الشرح:</strong><textarea class="li-desc">${escape(prefill.desc||'')}</textarea></div>
-    <div style="margin-top:6px"><strong>أمثلة (سطر لكل مثال):</strong><textarea class="li-ex">${escape(prefill.examples||'')}</textarea></div>
-    <div style="margin-top:6px"><strong>تمارين (سطر لكل تمرين):</strong><textarea class="li-q">${escape(prefill.exercises||'')}</textarea></div>
-    <div style="margin-top:6px"><strong>حلول قصيرة:</strong><textarea class="li-sol">${escape(prefill.solutions||'')}</textarea></div>
-    <div style="display:flex; gap:8px; margin-top:6px;">
-      <input type="file" accept="image/*" class="li-img"/>
-      <button class="btn btn-ghost btn-remove">حذف</button>
-    </div>
-    <div class="small img-name"></div>
-  `;
-  lessonsContainer.appendChild(el);
-
-  // handlers
-  el.querySelector('.btn-remove').addEventListener('click', ()=> { el.remove(); rebuildBook(); });
-  const imgInp = el.querySelector('.li-img');
-  const imgName = el.querySelector('.img-name');
-  imgInp.addEventListener('change', e => {
-    const f = e.target.files[0];
-    if(!f) return;
-    imgName.textContent = f.name;
-    const reader = new FileReader();
-    reader.onload = () => el.dataset.img = reader.result;
-    reader.readAsDataURL(f);
+function populateLevels(){
+  levelSelect.innerHTML = '';
+  Object.keys(curriculum).forEach(lv => {
+    const opt = document.createElement('option');
+    opt.value = lv; opt.textContent = lv;
+    levelSelect.appendChild(opt);
   });
-  // onchange -> preview
-  el.querySelectorAll('input, textarea').forEach(i => i.addEventListener('input', rebuildBook));
-  return el;
+}
+function populateLessonsFor(level){
+  lessonSelect.innerHTML = '';
+  const arr = curriculum[level] || [];
+  arr.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d.id; opt.textContent = d.title;
+    lessonSelect.appendChild(opt);
+  });
 }
 
-function escape(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
-
-function getLessonsFromUI(){
-  const nodes = Array.from(lessonsContainer.querySelectorAll('.lesson-item'));
-  return nodes.map((n,idx) => ({
-    title: n.querySelector('.li-title').value || `درس ${idx+1}`,
-    desc: n.querySelector('.li-desc').value || '',
-    examples: n.querySelector('.li-ex').value || '',
-    exercises: n.querySelector('.li-q').value || '',
-    solutions: n.querySelector('.li-sol').value || '',
-    image: n.dataset.img || null
-  }));
-}
-
-/* Buttons */
-document.getElementById('addManual').addEventListener('click', ()=> { makeLessonElement(); });
-document.getElementById('clear').addEventListener('click', ()=> { lessonsContainer.innerHTML=''; rebuildBook(); });
-document.getElementById('fillLevel').addEventListener('click', ()=> {
-  const lv = document.getElementById('levelSelect').value;
-  const arr = curriculum[lv] || [];
-  if(arr.length === 0){ alert('لا توجد دروس جاهزة لهذا المستوى'); return; }
-  arr.forEach(d => makeLessonElement(d));
-  rebuildBook();
-});
-document.getElementById('fillAll').addEventListener('click', ()=> {
-  Object.keys(curriculum).forEach(k => curriculum[k].forEach(d => makeLessonElement(d)));
-  rebuildBook();
-});
-
-document.getElementById('previewBtn').addEventListener('click', ()=> { rebuildBook(); MathJax.typesetPromise().then(()=> book.scrollIntoView({behavior:'smooth'})); });
-document.getElementById('pdfBtn').addEventListener('click', ()=> {
-  rebuildBook();
-  MathJax.typesetPromise().then(()=> {
-    const opt = {
-      margin: [12,10,12,10],
-      filename: (document.getElementById('teacher').value || 'mouadara') + '.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale:2, useCORS:true },
-      jsPDF: { unit:'mm', format:'a4', orientation:'portrait' }
-    };
-    // clone to avoid input fields interference
-    const element = book.cloneNode(true);
-    element.style.background = 'white';
-    html2pdf().set(opt).from(element).save();
-  });
-});
-
-/* Build book preview */
-function rebuildBook(){
-  const teacher = document.getElementById('teacher').value || '';
-  const school = document.getElementById('school').value || '';
-  const level = document.getElementById('levelSelect').value || '';
-  const lessons = getLessonsFromUI();
-
+// Build a single-lesson book HTML
+function buildBookForLessons(lessonsArray, levelLabel){
+  const teacher = escapeHTML(teacherInput.value || '');
+  const school = escapeHTML(schoolInput.value || '');
   let html = '';
   // cover
-  html += `<div class="cover lessonPage"><h2>مذكرة رياضيات</h2><div style="margin-top:10px; font-size:18px; color:var(--muted)">${level}</div><div class="author">${school}</div><div class="author" style="margin-top:18px">${teacher}</div></div>`;
-
-  // table of contents
+  html += `<div class="cover lessonPage"><h2>مذكرة رياضيات</h2><div style="margin-top:8px;color:var(--muted);font-size:16px">${escapeHTML(levelLabel)}</div><div style="margin-top:12px;font-size:16px">${school}</div><div style="margin-top:20px;font-size:16px">${teacher}</div></div>`;
+  // toc
   html += `<div class="toc lessonPage"><h3>فهرس المحتويات</h3><ol>`;
-  lessons.forEach((ls,idx)=> html += `<li>${escapeHTML((idx+1)+'. '+(ls.title||'درس'))}</li>`);
+  lessonsArray.forEach((ls, i) => html += `<li>${escapeHTML((i+1)+'. '+ls.title)}</li>`);
   html += `</ol></div>`;
-
-  // each lesson page
-  lessons.forEach((ls, idx) => {
+  // lessons pages
+  lessonsArray.forEach((ls, idx) => {
     html += `<div class="lessonPage">`;
-    html += `<div class="lessonHeader"><div><h3>${escapeHTML((idx+1)+'. '+ (ls.title||'درس'))}</h3></div><div class="small">المستوى: ${escapeHTML(level)}</div></div>`;
-    html += `<div class="section"><strong>الشرح:</strong><div style="margin-top:6px">${nl2br(ls.desc)}</div></div>`;
-    if(ls.image) html += `<div class="section"><strong>صورة توضيحية:</strong><div><img class="content-img" src="${ls.image}"/></div></div>`;
-    if((ls.examples||'').trim()){
+    html += `<div class="lessonHeader"><div><h3>${escapeHTML((idx+1)+'. '+ls.title)}</h3></div><div class="small">المستوى: ${escapeHTML(levelLabel)}</div></div>`;
+    html += `<div class="section"><strong>الشرح:</strong><div style="margin-top:8px">${nl2br(ls.desc)}</div></div>`;
+    if(ls.examples && ls.examples.trim()){
       html += `<div class="section"><strong>أمثلة:</strong><ol>`;
       ls.examples.split(/\n/).filter(s=>s.trim()).forEach(ex => html += `<li>${escapeHTML(ex)}</li>`);
       html += `</ol></div>`;
     }
-    if((ls.exercises||'').trim()){
+    if(ls.exercises && ls.exercises.trim()){
       html += `<div class="section"><strong>تمارين:</strong><ol>`;
       ls.exercises.split(/\n/).filter(s=>s.trim()).forEach(q => html += `<li>${escapeHTML(q)}</li>`);
       html += `</ol></div>`;
     }
-    if((ls.solutions||'').trim()){
-      html += `<div class="section"><strong>حلول قصيرة:</strong><div>${nl2br(ls.solutions)}</div></div>`;
+    if(ls.solutions && ls.solutions.trim()){
+      html += `<div class="section"><strong>حلول قصيرة:</strong><div style="margin-top:6px">${nl2br(ls.solutions)}</div></div>`;
     }
     html += `</div>`;
   });
-
   // footer
-  html += `<div class="lessonPage footer-note">تم إنشاء هذه المذكرة بواسطة مُولّد المذكرات — ${new Date().getFullYear()}</div>`;
-
-  book.innerHTML = html;
-
-  if(window.MathJax) MathJax.typesetPromise();
+  html += `<div class="lessonPage" style="text-align:center;padding-top:40px;"><div class="small">مولّد مذكرات — ${new Date().getFullYear()}</div></div>`;
+  return html;
 }
 
-function nl2br(s){ if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\\n/g,'<br/>').replace(/\n/g,'<br/>'); }
 function escapeHTML(s){ if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+function nl2br(s){ if(!s) return ''; return s.replace(/\n/g,'<br/>'); }
 
-/* بدءًا: اترك حقل فارغ ودع المستخدم يملأ أو يملأ مستوى ابتدائي تلقائياً */
-rebuildBook();
+// EVENTS
+levelSelect.addEventListener('change', ()=> {
+  populateLessonsFor(levelSelect.value);
+});
+document.getElementById('generateLesson').addEventListener('click', ()=> {
+  const lvl = levelSelect.value;
+  const lid = lessonSelect.value;
+  const arr = curriculum[lvl] || [];
+  const ls = arr.find(x => x.id === lid);
+  if(!ls){ alert('اختر درساً من القائمة'); return; }
+  const html = buildBookForLessons([ls], lvl);
+  bookDiv.innerHTML = html;
+  MathJax.typesetPromise();
+  // generate PDF immediately after small delay to allow MathJax render
+  setTimeout(()=> exportBookToPdf(html, `${ls.title}.pdf`), 900);
+});
+document.getElementById('generateLevel').addEventListener('click', ()=> {
+  const lvl = levelSelect.value;
+  const arr = curriculum[lvl] || [];
+  if(arr.length===0){ alert('لا توجد دروس لهذا المستوى'); return; }
+  const html = buildBookForLessons(arr, lvl);
+  bookDiv.innerHTML = html;
+  MathJax.typesetPromise();
+  setTimeout(()=> exportBookToPdf(html, `${lvl} - مذكرات.pdf`), 1200);
+});
+document.getElementById('generateAll').addEventListener('click', ()=> {
+  // combine all levels sequentially
+  const levels = Object.keys(curriculum);
+  let big = '';
+  levels.forEach(lv => {
+    const arr = curriculum[lv] || [];
+    big += buildBookForLessons(arr, lv);
+  });
+  bookDiv.innerHTML = big;
+  MathJax.typesetPromise();
+  setTimeout(()=> exportBookToPdf(big, `مذكرات_الرياضيات_المتوسط.pdf`), 1600);
+});
+
+// Export using html2pdf
+function exportBookToPdf(htmlContent, filename){
+  // create a hidden container to feed html2pdf (avoid UI elements)
+  const container = document.createElement('div');
+  container.style.background = 'white';
+  container.innerHTML = htmlContent;
+  // ensure element is in DOM for images/fonts to load
+  document.body.appendChild(container);
+  const opt = {
+    margin:       [12,10,12,10],
+    filename:     filename,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale:2, useCORS:true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(container).save().then(()=> {
+    // cleanup
+    document.body.removeChild(container);
+  }).catch(err=>{
+    alert('حدث خطأ أثناء توليد الـPDF: '+err.message);
+    document.body.removeChild(container);
+  });
+}
+
+/* INIT */
+populateLevels();
+populateLessonsFor(Object.keys(curriculum)[0]);
 
 </script>
 
