@@ -1,135 +1,511 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8"/>
-  <title>AI Prof Dali Nadjib — مولد المذكرات</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-  <style>
-    body{background:#0b0f14;color:#e6eef6;font-family:sans-serif;padding:20px}
-    .field{margin:10px 0;}
-    label{display:block;margin-bottom:5px;}
-    input,select{padding:8px;width:100%;border-radius:6px;border:none;}
-    .btn{margin:5px;background:linear-gradient(90deg,#00d1ff,#9cff5f);
-         color:#031018;font-weight:700;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;}
-    h1{color:#00d1ff;}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dali Nadjib AI Auto - تشخيص السيارات الجزائرية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff5722;
+            --secondary: #2196f3;
+            --dark: #121212;
+            --light: #f8f9fa;
+            --gray: #2c2c2c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), 
+                              url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23121212"/><path d="M0 0L100 100" stroke="%23222" stroke-width="1"/><path d="M100 0L0 100" stroke="%23222" stroke-width="1"/></svg>');
+            background-size: cover;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--primary);
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .app-subtitle {
+            font-size: 16px;
+            color: var(--light);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .selection-panel {
+            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .diagnosis-panel {
+            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ccc;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 16px;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background-color: #e64a19;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1976d2;
+        }
+        
+        .diagnosis-result {
+            background-color: #252525;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        
+        .result-title {
+            font-size: 20px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+        
+        .result-content {
+            line-height: 1.6;
+        }
+        
+        .brand-logos {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .brand-logo {
+            font-size: 40px;
+            color: #555;
+            transition: all 0.3s;
+        }
+        
+        .brand-logo:hover {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+        
+        .manual-input {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>AI Prof Dali Nadjib</h1>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="https://i.ibb.co/0Q0J0YX/dali-nadjib.jpg" alt="Dali Nadjib" class="logo-img">
+                <div class="logo-text">
+                    <span class="app-name">Dali Nadjib AI Auto</span>
+                    <span class="app-subtitle">تشخيص السيارات الجزائرية بالذكاء الاصطناعي</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="brand-logos">
+            <i class="brand-logo fas fa-car"></i>
+            <i class="brand-logo fas fa-cogs"></i>
+            <i class="brand-logo fas fa-tools"></i>
+            <i class="brand-logo fas fa-wrench"></i>
+            <i class="brand-logo fas fa-gas-pump"></i>
+        </div>
+        
+        <div class="main-content">
+            <div class="selection-panel">
+                <h2 class="section-title"><i class="fas fa-list-alt"></i> إختيار معلومات المركبة</h2>
+                
+                <div class="form-group">
+                    <label for="car-brand">نوع السيارة</label>
+                    <select id="car-brand">
+                        <option value="">-- إختر نوع السيارة --</option>
+                        <option value="renault">رونو</option>
+                        <option value="peugeot">بيجو</option>
+                        <option value="fiat">فيات</option>
+                        <option value="volkswagen">فولكسفاغن</option>
+                        <option value="chery">شيري</option>
+                        <option value="hyundai">هيونداي</option>
+                        <option value="kia">كيا</option>
+                        <option value="dacia">داسيا</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="car-model">الموديل</label>
+                    <select id="car-model" disabled>
+                        <option value="">-- إختر الموديل --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="manufacture-year">سنة التصنيع</label>
+                    <select id="manufacture-year" disabled>
+                        <option value="">-- إختر سنة التصنيع --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="obd-code">كود العطل (OBD)</label>
+                    <select id="obd-code" disabled>
+                        <option value="">-- إختر كود العطل --</option>
+                        <option value="manual">إدخال يدوي للكود</option>
+                        <option value="p0300">P0300 - عطل في اشتعال المحرك</option>
+                        <option value="p0171">P0171 - خلل في نظام الوقود</option>
+                        <option value="p0420">P0420 - كفاءة المحفز منخفضة</option>
+                        <option value="p0505">P0505 - خلل في نظام الخمول</option>
+                    </select>
+                </div>
+                
+                <div id="manual-input" class="manual-input">
+                    <div class="form-group">
+                        <label for="custom-code">أدخل كود العطل يدوياً</label>
+                        <input type="text" id="custom-code" placeholder="أدخل كود OBD هنا">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diagnosis-type">نوع التشخيص</label>
+                    <select id="diagnosis-type" disabled>
+                        <option value="">-- إختر نوع التشخيص --</option>
+                        <option value="general">تشخيص عام</option>
+                        <option value="engine">المحرك</option>
+                        <option value="transmission">ناقل الحركة</option>
+                        <option value="brakes">المكابح</option>
+                        <option value="electrical">النظام الكهربائي</option>
+                    </select>
+                </div>
+                
+                <button id="diagnose-btn" class="btn" disabled><i class="fas fa-stethoscope"></i> بدء التشخيص</button>
+            </div>
+            
+            <div class="diagnosis-panel">
+                <h2 class="section-title"><i class="fas fa-diagnoses"></i> نتائج التشخيص</h2>
+                
+                <div class="diagnosis-result">
+                    <h3 class="result-title">النتيجة</h3>
+                    <div class="result-content">
+                        <p>النتيجة ستظهر هنا بعد إكمال إختياراتك وإجراء التشخيص.</p>
+                    </div>
+                </div>
+                
+                <button id="solution-btn" class="btn btn-secondary" style="margin-top: 20px;" disabled>
+                    <i class="fas fa-tools"></i> عرض الحل المقترح
+                </button>
+            </div>
+        </div>
+    </div>
 
-  <div class="field">
-    <label>اسم الأستاذ</label>
-    <input id="teacher" value="الأستاذ: دالي نجيب">
-  </div>
-  <div class="field">
-    <label>اسم المؤسسة</label>
-    <input id="school" value="متوسطة النجاح">
-  </div>
-  <div class="field">
-    <label>المستوى</label>
-    <select id="level">
-      <option>السنة الرابعة متوسط</option>
-    </select>
-  </div>
-  <div class="field">
-    <label>اختر الدرس</label>
-    <select id="lesson">
-      <option value="sqrt">الجذر التربيعي لعدد موجب</option>
-    </select>
-  </div>
-
-  <button class="btn" onclick="preview()">معاينة</button>
-  <button class="btn" onclick="download()">تحميل PDF</button>
-
-  <div style="margin-top:20px;">
-    <iframe id="viewer" style="width:100%;height:600px;border:1px solid #555"></iframe>
-  </div>
-
-<script>
-const lessons = {
-  "sqrt":{
-    title:"الجذر التربيعي لعدد موجب",
-    table:[
-      [
-        'مقدمة: مراجعة الأعداد الطبيعية والجذور',
-        'تعريف الجذر التربيعي وتبسيط الجذور',
-        'سبورة + كتاب مدرسي',
-        'شرح: إذا كان a ≥ 0 فإن √a هو العدد الموجب x بحيث x²=a.\nخواص: √(ab)=√a√b ، √(a/b)=√a/√b.\nأمثلة: √72=6√2 ، √98=7√2.',
-        ''
-      ],
-      [
-        'وضعيات تعلمية',
-        'ترسيخ القاعدة',
-        'تمارين تطبيقية',
-        '1. √49 و √0.25\n2. √98\n3. √(81/16)',
-        ''
-      ],
-      [
-        'التقويم والدعم',
-        'التأكد من الفهم',
-        '',
-        'حلول:\n√49=7 ، √0.25=0.5\n√98=7√2\n√(81/16)=9/4',
-        ''
-      ]
-    ]
-  }
-};
-
-function buildDoc(){
-  const teacher=document.getElementById("teacher").value;
-  const school=document.getElementById("school").value;
-  const level=document.getElementById("level").value;
-  const lessonKey=document.getElementById("lesson").value;
-  const lesson=lessons[lessonKey];
-
-  return {
-    content:[
-      {text:'الجمهورية الجزائرية الديمقراطية الشعبية',alignment:'center',style:'small'},
-      {text:'مذكرة في مادة الرياضيات',style:'coverTitle',alignment:'center',margin:[0,10,0,20]},
-      {text:level,alignment:'center',style:'coverSub'},
-      {text:'الدرس: '+lesson.title,alignment:'center',style:'coverSub',margin:[0,10,0,20]},
-      {text:teacher+" — "+school,alignment:'center',margin:[0,0,0,30]},
-      {
-        table:{
-          widths:['20%','20%','20%','30%','10%'],
-          body:[
-            [
-              {text:'الوضعية التعليمية',style:'th'},
-              {text:'الأهداف التعلمية',style:'th'},
-              {text:'الوسائل',style:'th'},
-              {text:'الأنشطة',style:'th'},
-              {text:'ملاحظات',style:'th'}
-            ],
-            ...lesson.table
-          ]
-        },
-        layout:'lightHorizontalLines'
-      },
-      {text:'\nتم الإنشاء بواسطة AI Prof Dali Nadjib',style:'footer',alignment:'center'}
-    ],
-    styles:{
-      coverTitle:{fontSize:22,bold:true,color:'#00d1ff'},
-      coverSub:{fontSize:14,color:'#9cff5f'},
-      th:{bold:true,fillColor:'#e0f7ff',color:'#031018',alignment:'center'},
-      footer:{fontSize:10,italics:true,color:'#888'},
-      small:{fontSize:10,color:'#aaa'}
-    },
-    defaultStyle:{font:'Helvetica',fontSize:12}
-  };
-}
-
-function preview(){
-  const doc=buildDoc();
-  pdfMake.createPdf(doc).getDataUrl(function(dataUrl){
-    document.getElementById('viewer').src=dataUrl;
-  });
-}
-
-function download(){
-  const doc=buildDoc();
-  pdfMake.createPdf(doc).download("مذكرة_"+document.getElementById("lesson").value+".pdf");
-}
-</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر DOM
+            const carBrand = document.getElementById('car-brand');
+            const carModel = document.getElementById('car-model');
+            const manufactureYear = document.getElementById('manufacture-year');
+            const obdCode = document.getElementById('obd-code');
+            const diagnosisType = document.getElementById('diagnosis-type');
+            const diagnoseBtn = document.getElementById('diagnose-btn');
+            const solutionBtn = document.getElementById('solution-btn');
+            const manualInput = document.getElementById('manual-input');
+            const resultContent = document.querySelector('.result-content');
+            
+            // بيانات الموديلات حسب الماركة
+            const models = {
+                renault: ['Clio', 'Symbol', 'Logan', 'Sandero', 'Duster', 'Kangoo', 'Megane', 'Captur'],
+                peugeot: ['206', '207', '208', '307', '308', '406', '407', '508', '3008', '5008'],
+                fiat: ['Punto', 'Tipo', '500', '500L', '500X', 'Panda', 'Doblo', 'Qubo'],
+                volkswagen: ['Golf', 'Polo', 'Passat', 'Tiguan', 'Touran', 'Caddy', 'Amarok'],
+                chery: ['Tiggo', 'Arrizo', 'QQ', 'E5', 'CrossEastar'],
+                hyundai: ['i10', 'i20', 'i30', 'Elantra', 'Tucson', 'Santa Fe', 'Accent'],
+                kia: ['Picanto', 'Rio', 'Ceed', 'Sportage', 'Sorento', 'Cerato', 'Optima'],
+                dacia: ['Sandero', 'Logan', 'Duster', 'Lodgy', 'Docker']
+            };
+            
+            // بيانات أعطال OBD
+            const obdDiagnoses = {
+                p0300: {
+                    title: "عطل في اشتعال المحرك",
+                    arabic: "خلل في نظام الإشعال يؤدي إلى احتراق غير كامل في المحرك. قد يكون السبب شمعات الإشعال، كابلات الإشعال أو مشاكل في نظام الوقود.",
+                    algerian: "الموتور تاعك عندو مشكل في التكاريه. يمكن البواجيات مقطوعين أو الكونديرات ممسوخين. روح للكهربائي يشوفهم لينا."
+                },
+                p0171: {
+                    title: "خلل في نظام الوقود",
+                    arabic: "خليط الوقود هزيل جداً. قد يكون بسبب تسرب في نظام الهواء، حساس الأكسجين معطل أو مضخة الوقود ضعيفة.",
+                    algerian: "الموتور ماكايكلش كيما ينبغي. يمكن الفيلتر مسدود أو البومبو ماكايديش غاز. شوف البخاخات و الفيلتر."
+                },
+                p0420: {
+                    title: "كفاءة المحفز منخفضة",
+                    arabic: "انخفاض كفاءة المحول الحفاز. قد يكون بسبب تلف في المحفز، تسرب في العادم أو حساس الأكسجين معطل.",
+                    algerian: "الكانفارتر تاعك ماشي باهي. يمكن طاح حجر أو العادم مسرب. روح لصندوق العادم يشوفوه."
+                },
+                p0505: {
+                    title: "خلل في نظام الخمول",
+                    arabic: "خلل في نظام التحكم في سرعة الخمول. قد يكون بسبب صمام الخمول متسخ، تسرب في الفراغ أو مشكلة في حساس الخمول.",
+                    algerian: "الروضة تاع الموتور ماشية بزاف. يمكن صباب الروضة وسخ أو في تسريب هواء. نضف صباب الروضة و شوف التساريب."
+                }
+            };
+            
+            // إعداد سنوات التصنيع
+            function setupYears() {
+                const currentYear = new Date().getFullYear();
+                for (let year = currentYear; year >= 1980; year--) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    manufactureYear.appendChild(option);
+                }
+            }
+            
+            // إعداد الموديلات عند اختيار الماركة
+            carBrand.addEventListener('change', function() {
+                if (this.value) {
+                    carModel.disabled = false;
+                    carModel.innerHTML = '<option value="">-- إختر الموديل --</option>';
+                    
+                    models[this.value].forEach(function(model) {
+                        const option = document.createElement('option');
+                        option.value = model.toLowerCase();
+                        option.textContent = model;
+                        carModel.appendChild(option);
+                    });
+                } else {
+                    carModel.disabled = true;
+                    carModel.innerHTML = '<option value="">-- إختر الموديل --</option>';
+                    disableNextSteps([manufactureYear, obdCode, diagnosisType, diagnoseBtn]);
+                }
+            });
+            
+            // تمكين سنة التصنيع عند اختيار الموديل
+            carModel.addEventListener('change', function() {
+                if (this.value) {
+                    manufactureYear.disabled = false;
+                } else {
+                    manufactureYear.disabled = true;
+                    disableNextSteps([obdCode, diagnosisType, diagnoseBtn]);
+                }
+            });
+            
+            // تمكين كود OBD عند اختيار سنة التصنيع
+            manufactureYear.addEventListener('change', function() {
+                if (this.value) {
+                    obdCode.disabled = false;
+                } else {
+                    obdCode.disabled = true;
+                    disableNextSteps([diagnosisType, diagnoseBtn]);
+                }
+            });
+            
+            // التعامل مع اختيار كود OBD
+            obdCode.addEventListener('change', function() {
+                if (this.value === 'manual') {
+                    manualInput.style.display = 'block';
+                    diagnosisType.disabled = false;
+                } else if (this.value) {
+                    manualInput.style.display = 'none';
+                    diagnosisType.disabled = false;
+                } else {
+                    manualInput.style.display = 'none';
+                    diagnosisType.disabled = true;
+                    diagnoseBtn.disabled = true;
+                }
+            });
+            
+            // تمكين زر التشخيص عند اختيار نوع التشخيص
+            diagnosisType.addEventListener('change', function() {
+                diagnoseBtn.disabled = !this.value;
+            });
+            
+            // التعامل مع زر التشخيص
+            diagnoseBtn.addEventListener('click', function() {
+                const selectedCode = obdCode.value === 'manual' 
+                    ? document.getElementById('custom-code').value 
+                    : obdCode.value;
+                
+                if (selectedCode && selectedCode in obdDiagnoses) {
+                    const diagnosis = obdDiagnoses[selectedCode];
+                    resultContent.innerHTML = `
+                        <h4>${diagnosis.title}</h4>
+                        <p><strong>التشخيص بالعربية الفصحى:</strong> ${diagnosis.arabic}</p>
+                        <p><strong>التشخيص بالدارجة الجزائرية:</strong> ${diagnosis.algerian}</p>
+                    `;
+                    resultContent.classList.add('fade-in');
+                    solutionBtn.disabled = false;
+                    
+                    // إزالة تأثير fade-in بعد الإنتهاء من العرض
+                    setTimeout(() => {
+                        resultContent.classList.remove('fade-in');
+                    }, 500);
+                } else {
+                    resultContent.innerHTML = `
+                        <p>كود العطل غير معروف أو غير مسجل في قاعدة البيانات. يرجى التحقق من الكود أو إدخال كود صحيح.</p>
+                    `;
+                    solutionBtn.disabled = true;
+                }
+            });
+            
+            // التعامل مع زر عرض الحل
+            solutionBtn.addEventListener('click', function() {
+                resultContent.innerHTML += `
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #444;">
+                        <h4>الحل المقترح:</h4>
+                        <p><strong>بالعربية الفصحى:</strong> قم بفحص نظام الإشعال واستبدال شمعات الإشعال التالفة. تحقق من كابلات الإشعال ومضخة الوقود. قد تحتاج إلى تنظيف حساسات الهواء والوقود.</p>
+                        <p><strong>بالدارجة الجزائرية:</strong> دوز ليك عند الكهربائي يشوف البواجيات والكونديرات. نضف البخاخات والفيلتر. إذا لازمت الحالة مازالة، روح للكراج كبير.</p>
+                    </div>
+                `;
+                resultContent.classList.add('fade-in');
+                
+                // إزالة تأثير fade-in بعد الإنتهاء من العرض
+                setTimeout(() => {
+                    resultContent.classList.remove('fade-in');
+                }, 500);
+            });
+            
+            // تعطيل الخطوات التالية
+            function disableNextSteps(elements) {
+                elements.forEach(function(element) {
+                    element.disabled = true;
+                    if (element.tagName === 'SELECT') {
+                        element.selectedIndex = 0;
+                    }
+                });
+                manualInput.style.display = 'none';
+                solutionBtn.disabled = true;
+            }
+            
+            // تهيئة الصفحة
+            setupYears();
+        });
+    </script>
 </body>
 </html>
